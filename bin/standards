@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use NatePage\Standards\Kernel;
+use NatePage\Standards\ToolsCollection;
+
+$app = new Kernel();
+$tools = new ToolsCollection();
+
+$tools->addTools([
+    new \NatePage\Standards\Tools\PhpCsTool(),
+    new \NatePage\Standards\Tools\PhpCpdTool(),
+    new \NatePage\Standards\Tools\PhpStanTool()
+]);
+$tools->addTools([
+    new \NatePage\Standards\Tools\PhpUnitTool(),
+    new \NatePage\Standards\Tools\PhpMdTool()
+], 100);
+
+$app->setTools($tools);
+
+/** @noinspection PhpUnhandledExceptionInspection */
+$app->run();
