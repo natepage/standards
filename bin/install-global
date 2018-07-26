@@ -1,0 +1,18 @@
+#!/bin/bash
+
+ORIGINAL=${PWD}/$(dirname ${0})/standards
+TARGET=/usr/local/bin/standards
+
+if [ -L ${TARGET} ] || [ -e ${TARGET} ]; then
+    echo -e "\033[0;91m${TARGET} already exists. Abort...\033[m"
+    exit 1
+fi
+
+echo -e "\033[0;93mCreating symlink for ${ORIGINAL} to ${TARGET}\033[m"
+result=$(ln -s  ${ORIGINAL} ${TARGET})
+
+if [ ${?} -ne 0 ]; then
+    echo -e ${result}
+else
+    echo -e "You can now use \033[0;92m standards [options] \033[m wherever you want."
+fi
