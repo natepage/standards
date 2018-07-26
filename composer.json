@@ -13,15 +13,7 @@
         "roave/security-advisories": "dev-master"
     },
     "autoload": {
-        "psr-4": {
-          "NatePage\\Standards\\": "src/",
-          "Scripts\\NatePage\\Standards\\": "scripts/"
-        }
-    },
-    "scripts": {
-        "post-install-cmd": [
-            "Scripts\\NatePage\\Standards\\Binary::installStandards"
-        ]
+        "psr-4": { "NatePage\\Standards\\": "src/" }
     },
     "prefer": "stable",
     "minimum-stability": "dev"
