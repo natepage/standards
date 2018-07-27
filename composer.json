@@ -1,7 +1,7 @@
 {
     "name": "natepage/standards",
     "description": "Package to run coding standards tests.",
-    "type": "project",
+    "type": "package",
     "require": {
         "php": "^7.1",
         "symfony/process": "4.1.*",
