@@ -2,6 +2,7 @@
     "name": "natepage/standards",
     "description": "Package to run coding standards tests.",
     "type": "package",
+    "license": "MIT",
     "require": {
         "php": "^7.1",
         "symfony/process": "4.1.*",
