@@ -4,23 +4,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../bootstrap/autoload.php';
 
+use NatePage\Standards\Helpers\DefaultToolsCollectionHelper;
 use NatePage\Standards\Kernel;
-use NatePage\Standards\ToolsCollection;
 
 $app = new Kernel();
-$tools = new ToolsCollection();
-
-$tools->addTools([
-    new \NatePage\Standards\Tools\PhpCsTool(),
-    new \NatePage\Standards\Tools\PhpCpdTool(),
-    new \NatePage\Standards\Tools\PhpStanTool()
-]);
-$tools->addTools([
-    new \NatePage\Standards\Tools\PhpUnitTool(),
-    new \NatePage\Standards\Tools\PhpMdTool()
-], 100);
-
-$app->setTools($tools);
+$app->setTools((new DefaultToolsCollectionHelper())->getTools());
 
 /** @noinspection PhpUnhandledExceptionInspection */
 $app->run();
