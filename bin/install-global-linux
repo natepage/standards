@@ -2,7 +2,8 @@
 
 #---- Configuration ----#
 NAME=standards
-ORIGINAL=${PWD}/$(dirname ${0})/${NAME}
+ORIGINAL_DIR=$(dirname ${0})
+ORIGINAL=${ORIGINAL_DIR}/${NAME}
 TARGET_DIR=/usr/local/bin
 TARGET=${TARGET_DIR}/${NAME}
 
