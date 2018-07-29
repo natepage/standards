@@ -3,30 +3,11 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use NatePage\Standards\Configs\ConfigOption;
+use NatePage\Standards\Interfaces\ConfigInterface;
 
-class PhpUnitTool extends WithSymfonyProcessConfigTool
+class PhpUnitTool extends WithConfigTool
 {
-    /**
-     * Define the config structure using the given node definition.
-     *
-     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $root
-     *
-     * @return void
-     */
-    protected function defineConfigStructure(ArrayNodeDefinition $root): void
-    {
-        $root
-            ->canBeDisabled()
-            ->children()
-                ->booleanNode('enable_code_coverage')->defaultValue(true)->end()
-                ->integerNode('coverage_minimum_level')->defaultValue(90)->end()
-                ->scalarNode('junit_log_path')->defaultValue('')->end()
-                ->scalarNode('test_directory')->defaultValue('tests')->end()
-            ->end()
-        ;
-    }
-
     /**
      * Get command line to execute the tool.
      *
@@ -34,7 +15,7 @@ class PhpUnitTool extends WithSymfonyProcessConfigTool
      */
     public function getCli(): string
     {
-//        $config = $this->config->allFlat();
+//        $config = $this->config->dump();
 
         return '$(command -v phpdbg) -qrr vendor/bin/phpunit --bootstrap vendor/autoload.php --colors=always tests --coverage-text';
     }
@@ -57,5 +38,22 @@ class PhpUnitTool extends WithSymfonyProcessConfigTool
     public function getName(): string
     {
         return 'PHPUNIT';
+    }
+
+    /**
+     * Define tool options.
+     *
+     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
+     *
+     * @return void
+     */
+    protected function defineOptions(ConfigInterface $config): void
+    {
+        $config->addOptions([
+            new ConfigOption('enable_code_coverage', true),
+            new ConfigOption('coverage_minimum_level', 90),
+            new ConfigOption('junit_log_path', ''),
+            new ConfigOption('test_directory', 'tests')
+        ], $this->getId());
     }
 }

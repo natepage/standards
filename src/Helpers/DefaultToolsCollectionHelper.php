@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NatePage\Standards\Helpers;
 
 use NatePage\Standards\Interfaces\ToolsCollectionInterface;
-use NatePage\Standards\ToolsCollection;
+use NatePage\Standards\Tools\ToolsCollection;
 
 class DefaultToolsCollectionHelper
 {

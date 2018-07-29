@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use NatePage\Standards\Configs\ConfigOption;
+use NatePage\Standards\Interfaces\ConfigInterface;
 
-class PhpMdTool extends WithSymfonyProcessConfigTool
+class PhpMdTool extends WithConfigTool
 {
     /**
      * Get command line to execute the tool.
@@ -16,10 +17,10 @@ class PhpMdTool extends WithSymfonyProcessConfigTool
      */
     public function getCli(): string
     {
-        $config = $this->config->allFlat();
+        $config = $this->config->dump();
         $rules = \file_exists('phpmd.xml') ? 'phpmd.xml' : $config['phpmd.rule_sets'];
 
-        return \sprintf('%s %s text %s', $this->resolveBinary(), $config['standards.paths'], $rules);
+        return \sprintf('%s %s text %s', $this->resolveBinary(), $config['paths'], $rules);
     }
 
     /**
@@ -43,24 +44,17 @@ class PhpMdTool extends WithSymfonyProcessConfigTool
     }
 
     /**
-     * Define the config structure using the given node definition.
+     * Define tool options.
      *
-     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $root
+     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
      *
      * @return void
      */
-    protected function defineConfigStructure(ArrayNodeDefinition $root): void
+    protected function defineOptions(ConfigInterface $config): void
     {
-        $root
-            ->canBeDisabled()
-                ->children()
-                    ->scalarNode('rule_sets')
-                    ->beforeNormalization()
-                        ->ifArray()
-                        ->then(function (array $value): string { return \implode(',', $value); })
-                    ->end()
-                    ->defaultValue('cleancode,codesize,controversial,design,naming,unusedcode')
-                ->end()
-            ->end();
+        $config->addOption(
+            new ConfigOption('rule_sets', 'cleancode,codesize,controversial,design,naming,unusedcode'),
+            $this->getId()
+        );
     }
 }

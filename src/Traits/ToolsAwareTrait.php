@@ -5,7 +5,7 @@ namespace NatePage\Standards\Traits;
 
 use NatePage\Standards\Interfaces\ToolInterface;
 use NatePage\Standards\Interfaces\ToolsCollectionInterface;
-use NatePage\Standards\ToolsCollection;
+use NatePage\Standards\Tools\ToolsCollection;
 
 trait ToolsAwareTrait
 {

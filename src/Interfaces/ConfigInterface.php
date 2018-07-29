@@ -6,28 +6,47 @@ namespace NatePage\Standards\Interfaces;
 interface ConfigInterface
 {
     /**
-     * Get all config.
+     * Add option.
+     *
+     * @param \NatePage\Standards\Interfaces\ConfigOptionInterface $option
+     * @param null|string $tool
+     *
+     * @return \NatePage\Standards\Interfaces\ConfigInterface
+     */
+    public function addOption(ConfigOptionInterface $option, ?string $tool = null): self;
+
+    /**
+     * Add multiple options.
+     *
+     * @param \NatePage\Standards\Interfaces\ConfigOptionInterface[] $options
+     * @param null|string $tool
+     *
+     * @return \NatePage\Standards\Interfaces\ConfigInterface
+     */
+    public function addOptions(array $options, ?string $tool = null): self;
+
+    /**
+     * Get flat representation of config.
      *
      * @return mixed[]
      */
-    public function all(): array;
+    public function dump(): array;
 
     /**
-     * Get all config in a flattened array.
+     * Get value for given option.
      *
-     * @return mixed[]
-     */
-    public function allFlat(): array;
-
-    /**
-     * Get config value for given key, fallback to given default if not found.
-     *
-     * @param string $key
-     * @param null|mixed $default
+     * @param string $option
      *
      * @return mixed
      */
-    public function get(string $key, $default = null);
+    public function get(string $option);
+
+    /**
+     * Get options.
+     *
+     * @return mixed[]
+     */
+    public function getOptions(): array;
 
     /**
      * Merge current config with given one.
@@ -39,12 +58,12 @@ interface ConfigInterface
     public function merge(array $config): self;
 
     /**
-     * Set config value for given key.
+     * Set value for given option.
      *
-     * @param string $key
+     * @param string $option
      * @param mixed $value
      *
      * @return \NatePage\Standards\Interfaces\ConfigInterface
      */
-    public function set(string $key, $value): self;
+    public function set(string $option, $value): self;
 }

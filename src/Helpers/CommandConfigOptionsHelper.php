@@ -34,7 +34,7 @@ class CommandConfigOptionsHelper implements CommandConfigOptionsInterface
     {
         $this->requireProperties();
 
-        foreach ($this->config->allFlat() as $option => $value) {
+        foreach ($this->config->dump() as $option => $value) {
             $this->command->addOption($option, null, InputOption::VALUE_OPTIONAL, '', $value);
         }
     }

@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use NatePage\Standards\Configs\ConfigOption;
+use NatePage\Standards\Interfaces\ConfigInterface;
 
-class PhpStanTool extends WithSymfonyProcessConfigTool
+class PhpStanTool extends WithConfigTool
 {
     /**
      * Get command line to execute the tool.
@@ -16,13 +17,13 @@ class PhpStanTool extends WithSymfonyProcessConfigTool
      */
     public function getCli(): string
     {
-        $config = $this->config->allFlat();
+        $config = $this->config->dump();
         $neonFile = \file_exists('phpstan.neon') ? '-c phpstan.neon' : '';
 
         return \sprintf(
             '%s analyze %s %s --ansi --level %d --no-progress',
             $this->resolveBinary(),
-            $this->spacePaths($config['standards.paths']),
+            $this->spacePaths($config['paths']),
             $neonFile,
             $config['phpstan.reporting_level']
         );
@@ -49,18 +50,14 @@ class PhpStanTool extends WithSymfonyProcessConfigTool
     }
 
     /**
-     * Define the config structure using the given node definition.
+     * Define tool options.
      *
-     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $root
+     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
      *
      * @return void
      */
-    protected function defineConfigStructure(ArrayNodeDefinition $root): void
+    protected function defineOptions(ConfigInterface $config): void
     {
-        $root
-            ->canBeDisabled()
-            ->children()
-            ->integerNode('reporting_level')->defaultValue(7)->end()
-            ->end();
+        $config->addOption(new ConfigOption('reporting_level', 7), $this->getId());
     }
 }

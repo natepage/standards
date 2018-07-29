@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Helpers;
 
-use NatePage\Standards\Exceptions\InvalidOptionException;
+use NatePage\Standards\Exceptions\InvalidConfigOptionException;
 use NatePage\Standards\Interfaces\ConfigAwareInterface;
 use NatePage\Standards\Traits\ConfigAwareTrait;
 
@@ -18,13 +18,17 @@ class StandardsConfigHelper implements ConfigAwareInterface
      */
     public function handleToolsState(): self
     {
-        $only = $this->config->get('standards.only');
+        $only = $this->config->get('only');
 
-        if ($only === null) {
+        if ($only === null || empty($only)) {
             return $this;
         }
 
         $only = \explode(',', $only);
+
+        if (\count($only) <= 1) {
+            return $this;
+        }
 
         foreach ($this->getToolsId() as $toolId) {
             $this->config->set(\sprintf('%s.enabled', $toolId), \in_array($toolId, $only, true));
@@ -42,7 +46,7 @@ class StandardsConfigHelper implements ConfigAwareInterface
      */
     public function isToolEnabled(string $toolId): bool
     {
-        return (bool)$this->config->get(\sprintf('%s.enabled', $toolId), false);
+        return (bool)$this->config->get(\sprintf('%s.enabled', $toolId));
     }
 
     /**
@@ -60,16 +64,16 @@ class StandardsConfigHelper implements ConfigAwareInterface
     }
 
     /**
-     * Set valid standards.paths config with existing paths.
+     * Set valid paths config with existing paths.
      *
      * @return self
      *
-     * @throws \NatePage\Standards\Exceptions\InvalidOptionException If not at least one paths exist
+     * @throws \NatePage\Standards\Exceptions\InvalidConfigOptionException If not at least one paths exist
      */
     public function normalizePaths(): self
     {
         $found = [];
-        $paths = $this->config->get('standards.paths', []);
+        $paths = $this->config->get('paths');
 
         foreach (\explode(',', $paths) as $path) {
             if (\is_dir($path) === false) {
@@ -80,12 +84,12 @@ class StandardsConfigHelper implements ConfigAwareInterface
         }
 
         if (empty($found) === false) {
-            $this->config->set('standards.paths', \implode(',', $found));
+            $this->config->set('paths', \implode(',', $found));
 
             return $this;
         }
 
-        throw new InvalidOptionException(\sprintf(
+        throw new InvalidConfigOptionException(\sprintf(
             'None of configured paths has been found. Paths: %s',
             $paths
         ));
@@ -98,21 +102,10 @@ class StandardsConfigHelper implements ConfigAwareInterface
      */
     private function getToolsId(): array
     {
-        $exclude = [
-            'display-config',
-            'help',
-            'quiet',
-            'verbose',
-            'version',
-            'ansi',
-            'no-ansi',
-            'no-interaction',
-            'standards'
-        ];
         $ids = [];
 
-        foreach ($this->config->all() as $toolId => $config) {
-            if (\in_array($toolId, $exclude, true)) {
+        foreach ($this->config->getOptions() as $toolId => $options) {
+            if (\is_int($toolId)) {
                 continue;
             }
 

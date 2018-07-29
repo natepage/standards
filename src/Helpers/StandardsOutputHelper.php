@@ -30,7 +30,7 @@ class StandardsOutputHelper implements ConsoleAwareInterface
         $style->section('Config');
 
         $rows = [];
-        foreach ($config->allFlat() as $key => $value) {
+        foreach ($config->dump() as $key => $value) {
             $rows[] = [$key, $this->toString($value)];
         }
 

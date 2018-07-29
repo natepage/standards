@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use NatePage\Standards\Configs\ConfigOption;
+use NatePage\Standards\Interfaces\ConfigInterface;
 
-class PhpCpdTool extends WithSymfonyProcessConfigTool
+class PhpCpdTool extends WithConfigTool
 {
     /**
      * Get command line to execute the tool.
@@ -16,14 +17,14 @@ class PhpCpdTool extends WithSymfonyProcessConfigTool
      */
     public function getCli(): string
     {
-        $config = $this->config->allFlat();
+        $config = $this->config->dump();
 
         return \sprintf(
             '%s --ansi --min-lines=%s --min-tokens=%s %s',
             $this->resolveBinary(),
             $config['phpcpd.min_lines'],
             $config['phpcpd.min_tokens'],
-            $this->spacePaths($config['standards.paths'])
+            $this->spacePaths($config['paths'])
         );
     }
 
@@ -48,19 +49,17 @@ class PhpCpdTool extends WithSymfonyProcessConfigTool
     }
 
     /**
-     * Define the config structure using the given node definition.
+     * Define tool options.
      *
-     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $root
+     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
      *
      * @return void
      */
-    protected function defineConfigStructure(ArrayNodeDefinition $root): void
+    protected function defineOptions(ConfigInterface $config): void
     {
-        $root
-            ->canBeDisabled()
-            ->children()
-                ->integerNode('min_lines')->defaultValue(5)->end()
-                ->integerNode('min_tokens')->defaultValue(70)->end()
-            ->end();
+        $config->addOptions([
+            new ConfigOption('min_lines', 5),
+            new ConfigOption('min_tokens', 70)
+        ], $this->getId());
     }
 }

@@ -3,38 +3,43 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Commands;
 
+use NatePage\Standards\Configs\ConfigOption;
 use NatePage\Standards\Helpers\CommandConfigOptionsHelper;
 use NatePage\Standards\Helpers\StandardsConfigHelper;
 use NatePage\Standards\Helpers\StandardsOutputHelper;
+use NatePage\Standards\Interfaces\ConfigAwareInterface;
 use NatePage\Standards\Interfaces\ConfigInterface;
-use NatePage\Standards\Interfaces\ProcessConfigInterface;
-use NatePage\Standards\Interfaces\ToolsAwareInterface;
+use NatePage\Standards\Interfaces\ToolsCollectionInterface;
 use NatePage\Standards\Runners\ToolsRunner;
-use NatePage\Standards\Traits\ToolsAwareTrait;
-use NatePage\Standards\Traits\UsesSymfonyConfig;
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class StandardsCommand extends Command implements ProcessConfigInterface, ToolsAwareInterface
+class StandardsCommand extends Command
 {
-    use ToolsAwareTrait;
-    use UsesSymfonyConfig {
-        processConfig as private traitProcessConfig;
-    }
+    /**
+     * @var \NatePage\Standards\Interfaces\ConfigInterface
+     */
+    private $config;
 
     /**
-     * {@inheritdoc}
+     * @var \NatePage\Standards\Interfaces\ToolsCollectionInterface
      */
-    public function processConfig(ConfigInterface $config): void
-    {
-        $this->traitProcessConfig($config);
+    private $tools;
 
-        $this
-            ->configureTools()
-            ->configureOptions();
+    /**
+     * StandardsCommand constructor.
+     *
+     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
+     * @param \NatePage\Standards\Interfaces\ToolsCollectionInterface $tools
+     * @param null|string $name
+     */
+    public function __construct(ConfigInterface $config, ToolsCollectionInterface $tools, ?string $name = null)
+    {
+        $this->config = $config;
+        $this->tools = $tools;
+
+        parent::__construct($name);
     }
 
     /**
@@ -49,38 +54,29 @@ class StandardsCommand extends Command implements ProcessConfigInterface, ToolsA
         $this
             ->setName('check')
             ->setDescription('Check the code against the coding standards');
-    }
 
-    /**
-     * Define the config structure using the given node definition.
-     *
-     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $root
-     *
-     * @return void
-     */
-    protected function defineConfigStructure(ArrayNodeDefinition $root): void
-    {
-        $root
-            ->children()
-            ->scalarNode('only')
-            ->beforeNormalization()
-            ->ifArray()
-            ->then(function (array $value): string {
-                return \implode(',', $value);
-            })
-            ->end()
-            ->defaultValue(null)
-            ->end()
-            ->scalarNode('paths')
-            ->beforeNormalization()
-            ->ifArray()
-            ->then(function (array $value): string {
-                return \implode(',', $value);
-            })
-            ->end()
-            ->defaultValue('app,src,tests')
-            ->end()
-            ->end();
+        // Add global options to config
+        $this->config->addOptions([
+            new ConfigOption('display-config', false),
+            new ConfigOption('only', ''),
+            new ConfigOption('paths', 'app,src,tests')
+        ]);
+
+        // Add tools options to config
+        foreach ($this->tools->all() as $tool) {
+            if (($tool instanceof ConfigAwareInterface) === false) {
+                continue;
+            }
+
+            /** @var \NatePage\Standards\Interfaces\ConfigAwareInterface $tool */
+            $tool->setConfig($this->config);
+        }
+
+        // Add config options to input options
+        (new CommandConfigOptionsHelper())
+            ->withCommand($this)
+            ->withConfig($this->config)
+            ->addOptions();
     }
 
     /**
@@ -96,7 +92,7 @@ class StandardsCommand extends Command implements ProcessConfigInterface, ToolsA
     /**
      * {@inheritdoc}
      *
-     * @throws \NatePage\Standards\Exceptions\InvalidOptionException
+     * @throws \NatePage\Standards\Exceptions\InvalidConfigOptionException
      */
     protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
@@ -132,48 +128,6 @@ class StandardsCommand extends Command implements ProcessConfigInterface, ToolsA
         }
 
         return null;
-    }
-
-    /**
-     * Configure command options.
-     *
-     * @return self
-     */
-    private function configureOptions(): self
-    {
-        $this->addOption(
-            'display-config',
-            null,
-            InputOption::VALUE_OPTIONAL,
-            'Display the config used',
-            false
-        );
-
-        (new CommandConfigOptionsHelper())
-            ->withCommand($this)
-            ->withConfig($this->config)
-            ->addOptions();
-
-        return $this;
-    }
-
-    /**
-     * Configure tools.
-     *
-     * @return self
-     */
-    private function configureTools(): self
-    {
-        foreach ($this->tools->all() as $tool) {
-            if (($tool instanceof ProcessConfigInterface) === false) {
-                continue;
-            }
-
-            /** @var \NatePage\Standards\Interfaces\ProcessConfigInterface $tool */
-            $tool->processConfig($this->config);
-        }
-
-        return $this;
     }
 
     /**

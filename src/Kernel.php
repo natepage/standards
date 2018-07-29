@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NatePage\Standards;
 
 use NatePage\Standards\Commands\StandardsCommand;
+use NatePage\Standards\Configs\Config;
 use NatePage\Standards\Interfaces\ConfigInterface;
 use NatePage\Standards\Interfaces\KernelInterface;
 use NatePage\Standards\Traits\ToolsAwareTrait;
@@ -64,9 +65,7 @@ class Kernel implements KernelInterface
      */
     private function configure(): void
     {
-        $command = new StandardsCommand();
-        $command->setTools($this->tools);
-        $command->processConfig($this->config);
+        $command = new StandardsCommand($this->config, $this->tools);
 
         $this->console->add($command);
         $this->console->setDefaultCommand('check', true);

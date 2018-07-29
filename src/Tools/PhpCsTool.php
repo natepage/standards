@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use NatePage\Standards\Configs\ConfigOption;
+use NatePage\Standards\Interfaces\ConfigInterface;
 
-class PhpCsTool extends WithSymfonyProcessConfigTool
+class PhpCsTool extends WithConfigTool
 {
     /**
      * Get command line to execute the tool.
@@ -16,7 +17,7 @@ class PhpCsTool extends WithSymfonyProcessConfigTool
      */
     public function getCli(): string
     {
-        $config = $this->config->allFlat();
+        $config = $this->config->dump();
         $showSniffName = $config['phpcs.show_sniff_name'] ? '-s' : '';
         $standards = \file_exists('phpcs.xml') ? '' : \sprintf(
             '--standard=%s --report=full',
@@ -27,7 +28,7 @@ class PhpCsTool extends WithSymfonyProcessConfigTool
             '%s %s --colors %s %s',
             $this->resolveBinary(),
             $standards,
-            $this->spacePaths($config['standards.paths']),
+            $this->spacePaths($config['paths']),
             $showSniffName
         );
     }
@@ -53,21 +54,17 @@ class PhpCsTool extends WithSymfonyProcessConfigTool
     }
 
     /**
-     * Define the config structure using the given node definition.
+     * Define tool options.
      *
-     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $root
+     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
      *
      * @return void
      */
-    protected function defineConfigStructure(ArrayNodeDefinition $root): void
+    protected function defineOptions(ConfigInterface $config): void
     {
-        $root
-            ->canBeDisabled()
-            ->children()
-            ->scalarNode('standards')
-            ->defaultValue('vendor/eoneopay/standards/php-code-sniffer/EoneoPay')
-            ->end()
-            ->booleanNode('show_sniff_name')->defaultValue(true)->end()
-            ->end();
+        $config->addOptions([
+            new ConfigOption('standards', 'vendor/eoneopay/standards/php-code-sniffer/EoneoPay'),
+            new ConfigOption('show_sniff_name', true)
+        ], $this->getId());
     }
 }

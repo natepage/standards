@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace NatePage\Standards;
+namespace NatePage\Standards\Tools;
 
 use NatePage\Standards\Interfaces\ToolInterface;
 use NatePage\Standards\Interfaces\ToolsCollectionInterface;
