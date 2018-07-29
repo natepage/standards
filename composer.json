@@ -13,7 +13,5 @@
     },
     "autoload": {
         "psr-4": { "NatePage\\Standards\\": "src/" }
-    },
-    "prefer": "stable",
-    "minimum-stability": "dev"
+    }
 }
