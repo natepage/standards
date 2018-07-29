@@ -62,7 +62,7 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
             $processRunner->setOutput($this->getOutputForProcess($style));
 
             $processRunner
-                ->setTitle(\sprintf('Running %s...', $tool->getName()))
+                ->setTitle(\sprintf('Running %s', $tool->getName()))
                 ->setProcess(new Process($tool->getCli()));
 
             $this->runnings[] = $processRunner->run();

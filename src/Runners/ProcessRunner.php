@@ -17,6 +17,11 @@ class ProcessRunner extends WithConsoleRunner
     protected $process;
 
     /**
+     * @var \NatePage\Standards\Helpers\ConsoleOutputHelper
+     */
+    private $outputHelper;
+
+    /**
      * @var string
      */
     private $title;
@@ -28,11 +33,13 @@ class ProcessRunner extends WithConsoleRunner
      */
     public function close(): void
     {
-        if ($this->process->isSuccessful()) {
-            $this->output->write('// Successful');
-
+        if ($this->outputHelper->isVerbose()) {
             return;
         }
+
+        $this->outputHelper->write(
+            $this->process->isSuccessful() ? '// Successful' : $this->process->getErrorOutput()
+        );
     }
 
     /**
@@ -88,18 +95,24 @@ class ProcessRunner extends WithConsoleRunner
      */
     protected function doRun(): void
     {
-        $origin = $this->output;
-        $output = new ConsoleOutputHelper($origin->getVerbosity(), $origin->isDecorated(), $origin->getFormatter());
-        $style = $this->style($this->input, $output);
+        $this->outputHelper = (new ConsoleOutputHelper(
+            $this->output->getVerbosity(),
+            $this->output->isDecorated(),
+            $this->output->getFormatter()
+        ))->setOutput($this->output);
 
-        $output->setOutput($origin);
+        $style = $this->style($this->input, $this->outputHelper);
 
         if ($this->title !== null) {
             $style->title($this->title);
         }
 
-        $this->process->start(function ($type, $buffer) use ($output): void {
-            $output->write($buffer);
+        $this->process->start(function ($type, $buffer): void {
+            if ($this->outputHelper->isVerbose() === false) {
+                return;
+            }
+
+            $this->outputHelper->write($buffer);
         });
     }
 }
