@@ -148,11 +148,36 @@ class Config implements ConfigInterface
             foreach ($options as $option) {
                 $key = \is_int($tool) ? $option->getName() : \sprintf('%s.%s', $tool, $option->getName());
 
+                if (\is_bool($option->getDefault())) {
+                    $cache[$key] = $this->getBoolValue($key, $option->getDefault());
+
+                    continue;
+                }
+
                 $cache[$key] = $this->config[$key] ?? $option->getDefault();
             }
         }
 
         return $cache;
+    }
+
+    /**
+     * Get bool value for given config key.
+     *
+     * @param string $key
+     * @param bool $default
+     *
+     * @return bool
+     */
+    private function getBoolValue(string $key, bool $default): bool
+    {
+        if (\array_key_exists($key, $this->config)
+            && $this->config[$key] !== false
+            && $this->config[$key] !== 'false') {
+            return true;
+        }
+
+        return $default;
     }
 
     /**
