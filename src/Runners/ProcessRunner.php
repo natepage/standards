@@ -33,7 +33,7 @@ class ProcessRunner extends WithConsoleRunner
         }
 
         $this->output->write(
-            $this->process->isSuccessful() ? '// Successful' : $this->process->getErrorOutput()
+            $this->process->isSuccessful() ? '// Successful' : $this->process->getOutput()
         );
     }
 
@@ -45,6 +45,16 @@ class ProcessRunner extends WithConsoleRunner
     public function isRunning(): bool
     {
         return $this->process->isRunning();
+    }
+
+    /**
+     * Check if process is successful.
+     *
+     * @return bool
+     */
+    public function isSuccessful(): bool
+    {
+        return $this->process->isSuccessful();
     }
 
     /**

@@ -7,6 +7,7 @@ use NatePage\Standards\Interfaces\ConfigInterface;
 use NatePage\Standards\Interfaces\ConsoleAwareInterface;
 use NatePage\Standards\Traits\ConsoleAwareTrait;
 use NatePage\Standards\Traits\UsesStyle;
+use Symfony\Component\Console\Style\StyleInterface;
 
 class StandardsOutputHelper implements ConsoleAwareInterface
 {
@@ -26,7 +27,7 @@ class StandardsOutputHelper implements ConsoleAwareInterface
             return;
         }
 
-        $style = $this->style($this->input, $this->output);
+        $style = $this->getStyle();
         $style->section('Config');
 
         $rows = [];
@@ -46,7 +47,29 @@ class StandardsOutputHelper implements ConsoleAwareInterface
      */
     public function error(string $message): void
     {
-        $this->style($this->input, $this->output)->error($message);
+        $this->getStyle()->error($message);
+    }
+
+    /**
+     * Write success for given message.
+     *
+     * @param string $message
+     *
+     * @return void
+     */
+    public function success(string $message): void
+    {
+        $this->getStyle()->success($message);
+    }
+
+    /**
+     * Get output style.
+     *
+     * @return \Symfony\Component\Console\Style\StyleInterface
+     */
+    private function getStyle(): StyleInterface
+    {
+        return $this->style($this->input, $this->output);
     }
 
     /**

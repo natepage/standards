@@ -5,5 +5,10 @@ namespace NatePage\Standards\Interfaces;
 
 interface ToolsRunnerInterface extends ConsoleAwareInterface, ToolsAwareInterface, RunnerInterface
 {
-    // No body needed
+    /**
+     * Check if all tools were successful.
+     *
+     * @return bool
+     */
+    public function isSuccessful(): bool;
 }

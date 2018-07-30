@@ -23,6 +23,11 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
     private $runnings = [];
 
     /**
+     * @var bool
+     */
+    private $successful = true;
+
+    /**
      * Check if currently running.
      *
      * @return bool
@@ -30,6 +35,16 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
     public function isRunning(): bool
     {
         return empty($this->runnings) === false;
+    }
+
+    /**
+     * Check if all tools were successful.
+     *
+     * @return bool
+     */
+    public function isSuccessful(): bool
+    {
+        return $this->successful;
     }
 
     /**
@@ -71,8 +86,14 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
              * @var \NatePage\Standards\Runners\ProcessRunner $processRunner
              */
             foreach ($this->runnings as $index => $processRunner) {
+                // If process still running, skip
                 if ($processRunner->isRunning()) {
                     continue;
+                }
+
+                // If process not successful, tools runner not successful neither
+                if ($processRunner->isSuccessful() === false) {
+                    $this->successful = false;
                 }
 
                 $processRunner->close();

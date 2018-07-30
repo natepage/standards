@@ -18,6 +18,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class StandardsCommand extends Command
 {
+    public const EXIT_CODE_ERROR = 1;
+    public const EXIT_CODE_SUCCESS = 0;
+
     /**
      * @var \NatePage\Standards\Interfaces\ConfigInterface
      */
@@ -122,9 +125,20 @@ class StandardsCommand extends Command
             $toolsRunner->run();
         } catch (\Exception $exception) {
             $outputHelper->error($exception->getMessage());
+
+            return self::EXIT_CODE_ERROR;
         }
 
-        return null;
+        // If not successful, render error and return error exit code
+        if ($toolsRunner->isSuccessful() === false) {
+            $outputHelper->error('Oh you screwed up somewhere, go fix your errors');
+
+            return self::EXIT_CODE_ERROR;
+        }
+
+        $outputHelper->success('It all looks fine to me you fucking champion!');
+
+        return self::EXIT_CODE_SUCCESS;
     }
 
     /**

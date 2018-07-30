@@ -13,6 +13,13 @@ interface RunnerInterface
     public function isRunning(): bool;
 
     /**
+     * Check if successful.
+     *
+     * @return bool
+     */
+    public function isSuccessful(): bool;
+
+    /**
      * Run given instance.
      *
      * @return self

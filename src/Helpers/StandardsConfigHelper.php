@@ -26,10 +26,6 @@ class StandardsConfigHelper implements ConfigAwareInterface
 
         $only = \explode(',', $only);
 
-        if (\count($only) <= 1) {
-            return $this;
-        }
-
         foreach ($this->getToolsId() as $toolId) {
             $this->config->set(\sprintf('%s.enabled', $toolId), \in_array($toolId, $only, true));
         }
