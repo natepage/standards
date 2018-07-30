@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace NatePage\Standards\Helpers;
+namespace NatePage\Standards\Output;
 
-use Symfony\Component\Console\Output\ConsoleSectionOutput;
+use Symfony\Component\Console\Output\ConsoleSectionOutput as SymfonyConsoleSectionOutput;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ConsoleOutputHelper extends Output
+class ConsoleSectionOutput extends Output
 {
     /**
      * @var string
@@ -15,22 +15,20 @@ class ConsoleOutputHelper extends Output
     private $content = '';
 
     /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
+     * @var \Symfony\Component\Console\Output\ConsoleOutputInterface
      */
     private $output;
 
     /**
-     * Set output.
+     * ConsoleSectionOutput constructor.
      *
      * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return \NatePage\Standards\Helpers\ConsoleOutputHelper
      */
-    public function setOutput(OutputInterface $output): self
+    public function __construct(OutputInterface $output)
     {
         $this->output = $output;
 
-        return $this;
+        parent::__construct($output->getVerbosity(), $output->isDecorated(), $output->getFormatter());
     }
 
     /**
@@ -43,7 +41,7 @@ class ConsoleOutputHelper extends Output
      */
     protected function doWrite($message, $newline): void
     {
-        if (($this->output instanceof ConsoleSectionOutput) === false) {
+        if (($this->output instanceof SymfonyConsoleSectionOutput) === false) {
             $this->output->write($message, $newline);
 
             return;

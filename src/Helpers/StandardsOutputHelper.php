@@ -50,18 +50,6 @@ class StandardsOutputHelper implements ConsoleAwareInterface
     }
 
     /**
-     * Write title for given message.
-     *
-     * @param string $message
-     *
-     * @return void
-     */
-    public function title(string $message): void
-    {
-        $this->style($this->input, $this->output)->title($message);
-    }
-
-    /**
      * Convert given value to string.
      *
      * @param mixed $value

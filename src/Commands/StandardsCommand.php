@@ -4,15 +4,16 @@ declare(strict_types=1);
 namespace NatePage\Standards\Commands;
 
 use NatePage\Standards\Configs\ConfigOption;
-use NatePage\Standards\Helpers\CommandConfigOptionsHelper;
 use NatePage\Standards\Helpers\StandardsConfigHelper;
 use NatePage\Standards\Helpers\StandardsOutputHelper;
 use NatePage\Standards\Interfaces\ConfigAwareInterface;
 use NatePage\Standards\Interfaces\ConfigInterface;
 use NatePage\Standards\Interfaces\ToolsCollectionInterface;
+use NatePage\Standards\Interfaces\ToolsRunnerInterface;
 use NatePage\Standards\Runners\ToolsRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class StandardsCommand extends Command
@@ -73,10 +74,9 @@ class StandardsCommand extends Command
         }
 
         // Add config options to input options
-        (new CommandConfigOptionsHelper())
-            ->withCommand($this)
-            ->withConfig($this->config)
-            ->addOptions();
+        foreach ($this->config->dump() as $option => $value) {
+            $this->addOption($option, null, InputOption::VALUE_OPTIONAL, '', $value);
+        }
     }
 
     /**
@@ -98,6 +98,7 @@ class StandardsCommand extends Command
     {
         $configHelper = $this->getConfigHelper();
         $outputHelper = $this->getOutputHelper($input, $output);
+        $toolsRunner = $this->getToolsRunner($input, $output);
 
         // Update config with input options from user
         $configHelper
@@ -107,10 +108,6 @@ class StandardsCommand extends Command
 
         // Display config if asked
         $outputHelper->config($this->config);
-
-        $toolsRunner = new ToolsRunner();
-        $toolsRunner->setInput($input);
-        $toolsRunner->setOutput($output);
 
         // Run only enabled tools
         foreach ($this->tools->all() as $tool) {
@@ -138,6 +135,7 @@ class StandardsCommand extends Command
     private function getConfigHelper(): StandardsConfigHelper
     {
         $configHelper = new StandardsConfigHelper();
+
         $configHelper->setConfig($this->config);
 
         return $configHelper;
@@ -154,9 +152,28 @@ class StandardsCommand extends Command
     private function getOutputHelper(InputInterface $input, OutputInterface $output): StandardsOutputHelper
     {
         $outputHelper = new StandardsOutputHelper();
+
         $outputHelper->setInput($input);
         $outputHelper->setOutput($output);
 
         return $outputHelper;
+    }
+
+    /**
+     * Get tools runner.
+     *
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return \NatePage\Standards\Interfaces\ToolsRunnerInterface
+     */
+    private function getToolsRunner(InputInterface $input, OutputInterface $output): ToolsRunnerInterface
+    {
+        $toolsRunner = new ToolsRunner();
+
+        $toolsRunner->setInput($input);
+        $toolsRunner->setOutput($output);
+
+        return $toolsRunner;
     }
 }

@@ -9,8 +9,6 @@ use NatePage\Standards\Interfaces\ConfigInterface;
 use NatePage\Standards\Interfaces\KernelInterface;
 use NatePage\Standards\Traits\ToolsAwareTrait;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class Kernel implements KernelInterface
 {
@@ -44,18 +42,15 @@ class Kernel implements KernelInterface
     /**
      * Run the current standards instance and return exit code.
      *
-     * @param null|\Symfony\Component\Console\Input\InputInterface $input
-     * @param null|\Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @return int
      *
      * @throws \Exception If something went wrong
      */
-    public function run(?InputInterface $input = null, ?OutputInterface $output = null): int
+    public function run(): int
     {
         $this->configure();
 
-        return $this->console->run($input, $output);
+        return $this->console->run();
     }
 
     /**

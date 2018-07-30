@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Runners;
 
-use NatePage\Standards\Helpers\ConsoleOutputHelper;
+use NatePage\Standards\Output\ConsoleSectionOutput;
 use NatePage\Standards\Traits\UsesStyle;
 use Symfony\Component\Process\Process;
 
@@ -17,11 +17,6 @@ class ProcessRunner extends WithConsoleRunner
     protected $process;
 
     /**
-     * @var \NatePage\Standards\Helpers\ConsoleOutputHelper
-     */
-    private $outputHelper;
-
-    /**
      * @var string
      */
     private $title;
@@ -33,11 +28,11 @@ class ProcessRunner extends WithConsoleRunner
      */
     public function close(): void
     {
-        if ($this->outputHelper->isVerbose()) {
+        if ($this->output->isVerbose()) {
             return;
         }
 
-        $this->outputHelper->write(
+        $this->output->write(
             $this->process->isSuccessful() ? '// Successful' : $this->process->getErrorOutput()
         );
     }
@@ -95,24 +90,18 @@ class ProcessRunner extends WithConsoleRunner
      */
     protected function doRun(): void
     {
-        $this->outputHelper = (new ConsoleOutputHelper(
-            $this->output->getVerbosity(),
-            $this->output->isDecorated(),
-            $this->output->getFormatter()
-        ))->setOutput($this->output);
-
-        $style = $this->style($this->input, $this->outputHelper);
+        $this->output = new ConsoleSectionOutput($this->output);
 
         if ($this->title !== null) {
-            $style->title($this->title);
+            $this->output->writeln(\sprintf('<comment>%s</>', $this->title));
         }
 
         $this->process->start(function ($type, $buffer): void {
-            if ($this->outputHelper->isVerbose() === false) {
+            if ($this->output->isVerbose() === false) {
                 return;
             }
 
-            $this->outputHelper->write($buffer);
+            $this->output->write($buffer);
         });
     }
 }

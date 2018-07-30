@@ -6,6 +6,7 @@ namespace NatePage\Standards\Runners;
 use NatePage\Standards\Interfaces\ToolsRunnerInterface;
 use NatePage\Standards\Traits\ToolsAwareTrait;
 use NatePage\Standards\Traits\UsesStyle;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
@@ -57,11 +58,7 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
         }
 
         foreach ($this->tools->all() as $tool) {
-            $processRunner = new ProcessRunner();
-            $processRunner->setInput($this->input);
-            $processRunner->setOutput($this->getOutputForProcess($style));
-
-            $processRunner
+            $processRunner = $this->getProcessRunner($this->input, $this->getOutputForProcess($style))
                 ->setTitle(\sprintf('Running %s', $tool->getName()))
                 ->setProcess(new Process($tool->getCli()));
 
@@ -104,5 +101,23 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
         ));
 
         return $this->output;
+    }
+
+    /**
+     * Get process runner.
+     *
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return \NatePage\Standards\Runners\ProcessRunner
+     */
+    private function getProcessRunner(InputInterface $input, OutputInterface $output): ProcessRunner
+    {
+        $processRunner = new ProcessRunner();
+
+        $processRunner->setInput($input);
+        $processRunner->setOutput($output);
+
+        return $processRunner;
     }
 }
