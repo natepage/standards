@@ -6,7 +6,7 @@ namespace NatePage\Standards\Tools;
 use NatePage\Standards\Configs\ConfigOption;
 use NatePage\Standards\Interfaces\ConfigInterface;
 
-class PhpCpdTool extends WithConfigTool
+class PhpCpd extends WithConfigTool
 {
     /**
      * Get command line to execute the tool.

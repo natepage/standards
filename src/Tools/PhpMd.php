@@ -6,27 +6,21 @@ namespace NatePage\Standards\Tools;
 use NatePage\Standards\Configs\ConfigOption;
 use NatePage\Standards\Interfaces\ConfigInterface;
 
-class PhpStanTool extends WithConfigTool
+class PhpMd extends WithConfigTool
 {
     /**
      * Get command line to execute the tool.
      *
      * @return string
      *
-     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
+     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException If binary not found
      */
     public function getCli(): string
     {
         $config = $this->config->dump();
-        $neonFile = \file_exists('phpstan.neon') ? '-c phpstan.neon' : '';
+        $rules = \file_exists('phpmd.xml') ? 'phpmd.xml' : $config['phpmd.rule_sets'];
 
-        return \sprintf(
-            '%s analyze %s %s --ansi --level %d --no-progress',
-            $this->resolveBinary(),
-            $this->spacePaths($config['paths']),
-            $neonFile,
-            $config['phpstan.reporting_level']
-        );
+        return \sprintf('%s %s text %s', $this->resolveBinary(), $config['paths'], $rules);
     }
 
     /**
@@ -36,7 +30,7 @@ class PhpStanTool extends WithConfigTool
      */
     public function getId(): string
     {
-        return 'phpstan';
+        return 'phpmd';
     }
 
     /**
@@ -46,7 +40,7 @@ class PhpStanTool extends WithConfigTool
      */
     public function getName(): string
     {
-        return 'PHPSTAN';
+        return 'PHP: Mess Detector';
     }
 
     /**
@@ -58,6 +52,9 @@ class PhpStanTool extends WithConfigTool
      */
     protected function defineOptions(ConfigInterface $config): void
     {
-        $config->addOption(new ConfigOption('reporting_level', 7), $this->getId());
+        $config->addOption(
+            new ConfigOption('rule_sets', 'cleancode,codesize,controversial,design,naming,unusedcode'),
+            $this->getId()
+        );
     }
 }

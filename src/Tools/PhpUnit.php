@@ -6,31 +6,18 @@ namespace NatePage\Standards\Tools;
 use NatePage\Standards\Configs\ConfigOption;
 use NatePage\Standards\Interfaces\ConfigInterface;
 
-class PhpCsTool extends WithConfigTool
+class PhpUnit extends WithConfigTool
 {
     /**
      * Get command line to execute the tool.
      *
      * @return string
-     *
-     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
      */
     public function getCli(): string
     {
-        $config = $this->config->dump();
-        $showSniffName = $config['phpcs.show_sniff_name'] ? '-s' : '';
-        $standards = \file_exists('phpcs.xml') ? '' : \sprintf(
-            '--standard=%s --report=full',
-            $config['phpcs.standards']
-        );
+//        $config = $this->config->dump();
 
-        return \sprintf(
-            '%s %s --colors %s %s',
-            $this->resolveBinary(),
-            $standards,
-            $this->spacePaths($config['paths']),
-            $showSniffName
-        );
+        return '$(command -v phpdbg) -qrr vendor/bin/phpunit --bootstrap vendor/autoload.php --colors=always tests --coverage-text';
     }
 
     /**
@@ -40,7 +27,7 @@ class PhpCsTool extends WithConfigTool
      */
     public function getId(): string
     {
-        return 'phpcs';
+        return 'phpunit';
     }
 
     /**
@@ -50,7 +37,7 @@ class PhpCsTool extends WithConfigTool
      */
     public function getName(): string
     {
-        return 'PHPCS';
+        return 'PHPUNIT';
     }
 
     /**
@@ -63,8 +50,10 @@ class PhpCsTool extends WithConfigTool
     protected function defineOptions(ConfigInterface $config): void
     {
         $config->addOptions([
-            new ConfigOption('standards', 'vendor/eoneopay/standards/php-code-sniffer/EoneoPay'),
-            new ConfigOption('show_sniff_name', true)
+            new ConfigOption('enable_code_coverage', true),
+            new ConfigOption('coverage_minimum_level', 90),
+            new ConfigOption('junit_log_path', ''),
+            new ConfigOption('test_directory', 'tests')
         ], $this->getId());
     }
 }

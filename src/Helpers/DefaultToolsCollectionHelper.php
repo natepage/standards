@@ -18,13 +18,13 @@ class DefaultToolsCollectionHelper
         $tools = new ToolsCollection();
 
         $tools->addTools([
-            new \NatePage\Standards\Tools\PhpCsTool(),
-            new \NatePage\Standards\Tools\PhpCpdTool(),
-            new \NatePage\Standards\Tools\PhpStanTool()
+            new \NatePage\Standards\Tools\PhpCs(),
+            new \NatePage\Standards\Tools\PhpCpd(),
+            new \NatePage\Standards\Tools\PhpStan()
         ]);
         $tools->addTools([
-            new \NatePage\Standards\Tools\PhpUnitTool(),
-            new \NatePage\Standards\Tools\PhpMdTool()
+            new \NatePage\Standards\Tools\PhpUnit(),
+            new \NatePage\Standards\Tools\PhpMd()
         ], 100);
 
         return $tools;
