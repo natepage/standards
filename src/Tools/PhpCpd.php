@@ -58,8 +58,16 @@ class PhpCpd extends WithConfigTool
     protected function defineOptions(ConfigInterface $config): void
     {
         $config->addOptions([
-            new ConfigOption('min_lines', 5),
-            new ConfigOption('min_tokens', 70)
+            new ConfigOption(
+                'min_lines',
+                5,
+                'The minimum number of lines which need to be duplicated to count as copy/paste'
+            ),
+            new ConfigOption(
+                'min_tokens',
+                70,
+                'The minimum number of duplicated tokens within a line to count as copy/paste'
+            )
         ], $this->getId());
     }
 }

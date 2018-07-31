@@ -8,9 +8,14 @@ use NatePage\Standards\Interfaces\ConfigOptionInterface;
 class ConfigOption implements ConfigOptionInterface
 {
     /**
-     * @var mixed[]
+     * @var mixed
      */
     private $default;
+
+    /**
+     * @var string
+     */
+    private $description;
 
     /**
      * @var bool
@@ -26,13 +31,15 @@ class ConfigOption implements ConfigOptionInterface
      * ConfigOption constructor.
      *
      * @param string $name
-     * @param null|mixed $default
-     * @param null|mixed $exposed
+     * @param null $default
+     * @param null|string $description
+     * @param null|bool $exposed
      */
-    public function __construct(string $name, $default = null, $exposed = null)
+    public function __construct(string $name, $default = null, ?string $description = null, ?bool $exposed = null)
     {
         $this->name = $name;
         $this->default = $default;
+        $this->description = $description ?? '';
         $this->exposed = $exposed ?? true;
     }
 
@@ -44,6 +51,16 @@ class ConfigOption implements ConfigOptionInterface
     public function getDefault()
     {
         return $this->default;
+    }
+
+    /**
+     * Get option description.
+     *
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
     }
 
     /**

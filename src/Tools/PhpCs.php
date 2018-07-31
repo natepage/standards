@@ -63,8 +63,16 @@ class PhpCs extends WithConfigTool
     protected function defineOptions(ConfigInterface $config): void
     {
         $config->addOptions([
-            new ConfigOption('standards', 'vendor/eoneopay/standards/php-code-sniffer/EoneoPay'),
-            new ConfigOption('show_sniff_name', true)
+            new ConfigOption(
+                'standards',
+                'vendor/eoneopay/standards/php-code-sniffer/EoneoPay',
+                'The standards to compare code against, will be ignored if phpcs.xml exists'
+            ),
+            new ConfigOption(
+                'show_sniff_name',
+                true,
+                'Whether to show the code sniffs name on report output'
+            )
         ], $this->getId());
     }
 }

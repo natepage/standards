@@ -44,7 +44,7 @@ interface ConfigInterface
     /**
      * Get options.
      *
-     * @return mixed[]
+     * @return \NatePage\Standards\Interfaces\ConfigOptionInterface[]
      */
     public function getOptions(): array;
 

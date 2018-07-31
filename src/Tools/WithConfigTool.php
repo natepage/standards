@@ -39,7 +39,11 @@ abstract class WithConfigTool implements ConfigAwareInterface, ToolInterface
         $this->traitSetConfig($config);
 
         // Set enabled option
-        $config->addOption(new ConfigOption('enabled', true), $this->getId());
+        $config->addOption(new ConfigOption(
+            'enabled',
+            true,
+            \sprintf('Whether or not to run %s', $this->getId())
+        ), $this->getId());
 
         $this->defineOptions($config);
     }

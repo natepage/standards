@@ -58,6 +58,10 @@ class PhpStan extends WithConfigTool
      */
     protected function defineOptions(ConfigInterface $config): void
     {
-        $config->addOption(new ConfigOption('reporting_level', 7), $this->getId());
+        $config->addOption(new ConfigOption(
+            'reporting_level',
+            7,
+            'The reporting level, 1 = loose, 7 = strict'
+        ), $this->getId());
     }
 }

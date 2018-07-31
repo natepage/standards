@@ -13,6 +13,13 @@ interface ConfigOptionInterface
     public function getDefault();
 
     /**
+     * Get option description.
+     *
+     * @return string
+     */
+    public function getDescription(): string;
+
+    /**
      * Get option name.
      *
      * @return string

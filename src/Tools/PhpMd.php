@@ -53,7 +53,11 @@ class PhpMd extends WithConfigTool
     protected function defineOptions(ConfigInterface $config): void
     {
         $config->addOption(
-            new ConfigOption('rule_sets', 'cleancode,codesize,controversial,design,naming,unusedcode'),
+            new ConfigOption(
+                'rule_sets',
+                'cleancode,codesize,controversial,design,naming,unusedcode',
+                'The rulesets to use to determine issues, will be ignored if phpmd.xml exists'
+            ),
             $this->getId()
         );
     }

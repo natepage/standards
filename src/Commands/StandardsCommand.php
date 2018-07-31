@@ -61,9 +61,9 @@ class StandardsCommand extends Command
 
         // Add global options to config
         $this->config->addOptions([
-            new ConfigOption('display-config', false),
-            new ConfigOption('only', ''),
-            new ConfigOption('paths', 'app,src,tests')
+            new ConfigOption('display-config', false, 'Display config'),
+            new ConfigOption('only', null, 'Run only specified tools'),
+            new ConfigOption('paths', 'app,src,tests', 'Specify the paths to run the tools on')
         ]);
 
         // Add tools options to config
@@ -77,8 +77,25 @@ class StandardsCommand extends Command
         }
 
         // Add config options to input options
-        foreach ($this->config->dump() as $option => $value) {
-            $this->addOption($option, null, InputOption::VALUE_OPTIONAL, '', $value);
+        foreach ($this->config->getOptions() as $tool => $options) {
+            /**
+             * @var \NatePage\Standards\Interfaces\ConfigOptionInterface $option
+             */
+            foreach ($options as $option) {
+                if ($option->isExposed() === false) {
+                    continue;
+                }
+
+                $key = \is_int($tool) ? $option->getName() : \sprintf('%s.%s', $tool, $option->getName());
+
+                $this->addOption(
+                    $key,
+                    null,
+                    InputOption::VALUE_OPTIONAL,
+                    $option->getDescription(),
+                    $option->getDefault()
+                );
+            }
         }
     }
 

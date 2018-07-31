@@ -42,6 +42,11 @@ class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
         // If coverage enabled
         if ($config['phpunit.enable_code_coverage'] === true) {
             $cli = $this->withCoverage($cli);
+
+            // If junit enabled
+            if (empty($config['phpunit.junit_log_path']) !== false) {
+                $cli .= \sprintf('%s --log-junit=%s', $cli, $config['phpunit.junit_log_path']);
+            }
         }
 
         return $cli;
@@ -91,11 +96,31 @@ class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
     protected function defineOptions(ConfigInterface $config): void
     {
         $config->addOptions([
-            new ConfigOption('config_file', 'phpunit.xml'),
-            new ConfigOption('coverage_minimum_level', 90),
-            new ConfigOption('enable_code_coverage', true),
-            new ConfigOption('junit_log_path', ''),
-            new ConfigOption('test_directory', 'tests')
+            new ConfigOption(
+                'config_file',
+                'phpunit.xml',
+                'Config file to use to run PHPUnit'
+            ),
+            new ConfigOption(
+                'coverage_minimum_level',
+                90,
+                'The minimum percentage of coverage to have, will be ignored if coverage check is disabled'
+            ),
+            new ConfigOption(
+                'enable_code_coverage',
+                true,
+                'Whether or not to enable code coverage checks'
+            ),
+            new ConfigOption(
+                'junit_log_path',
+                null,
+                'The path to output junit parseable log file, can be relative, will be ignored if left blank'
+            ),
+            new ConfigOption(
+                'test_directory',
+                'tests',
+                'The directory containing tests, will be ignored it phpunit.xml exists in working directory'
+            )
         ], $this->getId());
     }
 
