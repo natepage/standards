@@ -3,13 +3,16 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Runners;
 
+use NatePage\Standards\Interfaces\HasProcessRunnerInterface;
+use NatePage\Standards\Interfaces\HasRunnerProviderInterface;
+use NatePage\Standards\Interfaces\ProcessRunnerInterface;
+use NatePage\Standards\Interfaces\ToolInterface;
 use NatePage\Standards\Interfaces\ToolsRunnerInterface;
+use NatePage\Standards\Output\ConsoleSectionOutput;
 use NatePage\Standards\Traits\ToolsAwareTrait;
 use NatePage\Standards\Traits\UsesStyle;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\Process\Process;
 
 class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
@@ -59,8 +62,6 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
      * Do run current instance.
      *
      * @return void
-     *
-     * @throws \NatePage\Standards\Exceptions\MissingRequiredPropertiesException
      */
     protected function doRun(): void
     {
@@ -73,9 +74,10 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
         }
 
         foreach ($this->tools->all() as $tool) {
-            $processRunner = $this->getProcessRunner($this->input, $this->getOutputForProcess($style))
-                ->setTitle(\sprintf('Running %s', $tool->getName()))
-                ->setProcess(new Process($tool->getCli()));
+            $output = $this->getOutputForProcess();
+            $processRunner = $this->getProcessRunner($tool, $output)->setProcess(new Process($tool->getCli()));
+
+            $output->writeln(\sprintf('<comment>%s</>', $tool->getName()));
 
             $this->runnings[] = $processRunner->run();
         }
@@ -106,17 +108,15 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
     /**
      * Get output for process runners.
      *
-     * @param StyleInterface $style
-     *
      * @return \Symfony\Component\Console\Output\OutputInterface
      */
-    private function getOutputForProcess(StyleInterface $style): OutputInterface
+    private function getOutputForProcess(): OutputInterface
     {
         if ($this->output instanceof ConsoleOutputInterface) {
-            return $this->output->section();
+            return new ConsoleSectionOutput($this->output->section());
         }
 
-        $style->warning(\sprintf(
+        $this->style($this->input, $this->output)->warning(\sprintf(
             'Current output does not support sections, no guarantee about the result. Please prefer using %s',
             ConsoleOutputInterface::class
         ));
@@ -127,16 +127,16 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
     /**
      * Get process runner.
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \NatePage\Standards\Interfaces\ToolInterface $tool
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
-     * @return \NatePage\Standards\Runners\ProcessRunner
+     * @return \NatePage\Standards\Interfaces\ProcessRunnerInterface
      */
-    private function getProcessRunner(InputInterface $input, OutputInterface $output): ProcessRunner
+    private function getProcessRunner(ToolInterface $tool, OutputInterface $output): ProcessRunnerInterface
     {
-        $processRunner = new ProcessRunner();
+        $processRunner = $tool instanceof HasProcessRunnerInterface ? $tool->getProcessRunner() : new ProcessRunner();
 
-        $processRunner->setInput($input);
+        $processRunner->setInput($this->input);
         $processRunner->setOutput($output);
 
         return $processRunner;

@@ -3,23 +3,15 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Runners;
 
-use NatePage\Standards\Output\ConsoleSectionOutput;
-use NatePage\Standards\Traits\UsesStyle;
+use NatePage\Standards\Interfaces\ProcessRunnerInterface;
 use Symfony\Component\Process\Process;
 
-class ProcessRunner extends WithConsoleRunner
+class ProcessRunner extends WithConsoleRunner implements ProcessRunnerInterface
 {
-    use UsesStyle;
-
     /**
      * @var \Symfony\Component\Process\Process
      */
     protected $process;
-
-    /**
-     * @var string
-     */
-    private $title;
 
     /**
      * Close process.
@@ -33,7 +25,7 @@ class ProcessRunner extends WithConsoleRunner
         }
 
         $this->output->write(
-            $this->process->isSuccessful() ? '// Successful' : $this->process->getOutput()
+            $this->isSuccessful() ? '// Successful' : $this->process->getOutput()
         );
     }
 
@@ -62,25 +54,11 @@ class ProcessRunner extends WithConsoleRunner
      *
      * @param \Symfony\Component\Process\Process $process
      *
-     * @return \NatePage\Standards\Runners\ProcessRunner
+     * @return \NatePage\Standards\Interfaces\ProcessRunnerInterface
      */
-    public function setProcess(Process $process): self
+    public function setProcess(Process $process): ProcessRunnerInterface
     {
         $this->process = $process;
-
-        return $this;
-    }
-
-    /**
-     * Set title.
-     *
-     * @param string $title
-     *
-     * @return \NatePage\Standards\Runners\ProcessRunner
-     */
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
 
         return $this;
     }
@@ -100,12 +78,6 @@ class ProcessRunner extends WithConsoleRunner
      */
     protected function doRun(): void
     {
-        $this->output = new ConsoleSectionOutput($this->output);
-
-        if ($this->title !== null) {
-            $this->output->writeln(\sprintf('<comment>%s</>', $this->title));
-        }
-
         $this->process->start(function ($type, $buffer): void {
             if ($this->output->isVerbose() === false) {
                 return;

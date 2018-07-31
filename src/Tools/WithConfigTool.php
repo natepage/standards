@@ -77,7 +77,7 @@ abstract class WithConfigTool implements ConfigAwareInterface, ToolInterface
         $command = $process->getOutput();
 
         if (empty($command) === false && $process->isSuccessful()) {
-            return $command;
+            return \trim($command);
         }
 
         throw new BinaryNotFoundException(\sprintf('Binary for %s not found.', $binary));
