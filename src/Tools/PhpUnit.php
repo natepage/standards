@@ -44,8 +44,8 @@ class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
             $cli = $this->withCoverage($cli);
 
             // If junit enabled
-            if (empty($config['phpunit.junit_log_path']) !== false) {
-                $cli .= \sprintf('%s --log-junit=%s', $cli, $config['phpunit.junit_log_path']);
+            if (empty($config['phpunit.junit_log_path']) === false) {
+                $cli .= \sprintf(' --log-junit=%s', $config['phpunit.junit_log_path']);
             }
         }
 
