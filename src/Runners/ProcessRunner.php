@@ -20,7 +20,13 @@ class ProcessRunner extends WithConsoleRunner implements ProcessRunnerInterface
      */
     public function close(): void
     {
+        $output = \trim($this->process->getOutput());
+
         if ($this->output->isVerbose()) {
+            if (empty($output)) {
+                $this->output->write('// Successful');
+            }
+
             return;
         }
 

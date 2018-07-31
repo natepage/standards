@@ -40,7 +40,7 @@ class PhpMd extends WithConfigTool
      */
     public function getName(): string
     {
-        return 'PHP: Mess Detector';
+        return 'PHPMD';
     }
 
     /**
