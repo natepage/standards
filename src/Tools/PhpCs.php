@@ -65,7 +65,7 @@ class PhpCs extends WithConfigTool
         $config->addOptions([
             new ConfigOption(
                 'standards',
-                'vendor/eoneopay/standards/php-code-sniffer/EoneoPay',
+                \sprintf('%s/../../sniffs/NatePage', __DIR__),
                 'The standards to compare code against, will be ignored if phpcs.xml exists'
             ),
             new ConfigOption(

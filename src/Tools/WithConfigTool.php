@@ -70,18 +70,26 @@ abstract class WithConfigTool implements ConfigAwareInterface, ToolInterface
     {
         $binary = $binary ?? $this->getId();
 
+        // Try inspected project vendor
         $vendor = \sprintf('vendor/bin/%s', $binary);
 
         if (\file_exists($vendor)) {
             return $vendor;
         }
 
+        // Try command line tool
         $process = new Process(\sprintf('command -v %s', $binary));
         $process->run();
         $command = $process->getOutput();
 
         if (empty($command) === false && $process->isSuccessful()) {
             return \trim($command);
+        }
+
+        // Fallback to standards binary
+        if (\defined('NP_STANDARDS_INTERNAL_VENDOR')
+            && \file_exists(\sprintf('%sbin/%s', NP_STANDARDS_INTERNAL_VENDOR, $binary))) {
+            return \sprintf('%sbin/%s', NP_STANDARDS_INTERNAL_VENDOR, $binary);
         }
 
         throw new BinaryNotFoundException(\sprintf('Binary for %s not found.', $binary));

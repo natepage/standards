@@ -3,16 +3,19 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
+use EoneoPay\Utils\XmlConverter;
 use NatePage\Standards\Configs\ConfigOption;
 use NatePage\Standards\Exceptions\BinaryNotFoundException;
 use NatePage\Standards\Exceptions\UnableToRunToolException;
 use NatePage\Standards\Interfaces\ConfigInterface;
+use NatePage\Standards\Interfaces\HasProcessInterface;
 use NatePage\Standards\Interfaces\HasProcessRunnerInterface;
 use NatePage\Standards\Interfaces\ProcessRunnerInterface;
 use NatePage\Standards\Runners\PhpUnitProcessRunner;
 use NatePage\Standards\Runners\ProcessRunner;
+use Symfony\Component\Process\Process;
 
-class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
+class PhpUnit extends WithConfigTool implements HasProcessInterface, HasProcessRunnerInterface
 {
     private const AUTOLOAD = 'vendor/autoload.php';
 
@@ -70,6 +73,36 @@ class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
     public function getName(): string
     {
         return 'PHPUNIT';
+    }
+
+    /**
+     * Get process.
+     *
+     * @return \Symfony\Component\Process\Process
+     *
+     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
+     * @throws \NatePage\Standards\Exceptions\UnableToRunToolException
+     * @throws \EoneoPay\Utils\Exceptions\InvalidXmlException
+     */
+    public function getProcess(): Process
+    {
+        $phpUnitConfig = (new XmlConverter())->xmlToArray(
+            \file_get_contents($this->config->get('phpunit.config_file')),
+            XmlConverter::XML_INCLUDE_ATTRIBUTES
+        );
+
+        $env = [];
+        foreach ($phpUnitConfig['php']['env'] ?? [] as $node) {
+            $name = $node['@attributes']['name'] ?? null;
+
+            if ($name === null) {
+                continue;
+            }
+
+            $env[$name] = $node['@attributes']['value'] ?? 'NULL';
+        }
+
+        return new Process($this->getCli(), null, $env);
     }
 
     /**

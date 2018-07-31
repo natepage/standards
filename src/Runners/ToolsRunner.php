@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Runners;
 
+use NatePage\Standards\Interfaces\HasProcessInterface;
 use NatePage\Standards\Interfaces\HasProcessRunnerInterface;
-use NatePage\Standards\Interfaces\HasRunnerProviderInterface;
 use NatePage\Standards\Interfaces\ProcessRunnerInterface;
 use NatePage\Standards\Interfaces\ToolInterface;
 use NatePage\Standards\Interfaces\ToolsRunnerInterface;
@@ -75,7 +75,7 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
 
         foreach ($this->tools->all() as $tool) {
             $output = $this->getOutputForProcess();
-            $processRunner = $this->getProcessRunner($tool, $output)->setProcess(new Process($tool->getCli()));
+            $processRunner = $this->getProcessRunner($tool, $output);
 
             $output->writeln(\sprintf('<comment>%s</>', $tool->getName()));
 
@@ -139,6 +139,8 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
         $processRunner->setInput($this->input);
         $processRunner->setOutput($output);
 
-        return $processRunner;
+        return $processRunner->setProcess(
+            $tool instanceof HasProcessInterface ? $tool->getProcess() : new Process($tool->getCli())
+        );
     }
 }

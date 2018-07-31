@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<ruleset name="NatePage">
+    <description>NatePage coding standards</description>
+
+    <!-- Define output -->
+    <arg name="tab-width" value="4"/>
+    <arg name="report-full"/>
+
+    <!-- Import PSR1/2 as base -->
+    <rule ref="PSR1"/>
+    <rule ref="PSR2"/>
+
+    <config name="installed_paths" value="../../slevomat/coding-standard"/>
+
+    <rule ref="SlevomatCodingStandard.Classes.ClassConstantVisibility"/>
+    <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
+    <rule ref="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.DisallowEqualOperators"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.NewWithParentheses"/>
+    <rule ref="SlevomatCodingStandard.Exceptions.DeadCatch"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.FullyQualifiedClassNameInAnnotation"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.FullyQualifiedGlobalConstants"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.FullyQualifiedGlobalFunctions"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
+        <properties>
+            <property name="searchAnnotations" value="1"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UseSpacing">
+        <properties>
+            <property name="linesCountBeforeFirstUse" value="1"/>
+            <property name="linesCountBetweenUseTypes" value="0"/>
+            <property name="linesCountAfterLastUse" value="1"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Types.EmptyLinesAroundTypeBraces">
+        <properties>
+            <property name="linesCountAfterOpeningBrace" value="0"/>
+            <property name="linesCountBeforeClosingBrace" value="0"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.LongTypeHints"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration">
+        <properties>
+            <property name="enableEachParameterAndReturnInspection" value="0"/>
+        </properties>
+    </rule>
+</ruleset>
