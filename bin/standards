@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../bootstrap/autoload.php';
 
-use NatePage\Standards\Helpers\DefaultToolsCollectionHelper;
-use NatePage\Standards\Kernel;
+use NatePage\Standards\Commands\StandardsCommand;
+use Symfony\Component\Console\Application;
 
-$app = new Kernel(['phpunit.coverage_minimum_level' => 50]);
-$app->setTools((new DefaultToolsCollectionHelper())->getTools());
+$app = new Application('standards', '1.0.0');
+$app->add(new StandardsCommand());
+$app->setDefaultCommand('standards', true);
 
 /** @noinspection PhpUnhandledExceptionInspection */
 $app->run();

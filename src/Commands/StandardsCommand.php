@@ -3,21 +3,27 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Commands;
 
+use NatePage\Standards\Configs\Config;
 use NatePage\Standards\Configs\ConfigOption;
+use NatePage\Standards\Helpers\DefaultToolsCollectionHelper;
 use NatePage\Standards\Helpers\StandardsConfigHelper;
 use NatePage\Standards\Helpers\StandardsOutputHelper;
 use NatePage\Standards\Interfaces\ConfigAwareInterface;
 use NatePage\Standards\Interfaces\ConfigInterface;
+use NatePage\Standards\Interfaces\ToolsAwareInterface;
 use NatePage\Standards\Interfaces\ToolsCollectionInterface;
 use NatePage\Standards\Interfaces\ToolsRunnerInterface;
 use NatePage\Standards\Runners\ToolsRunner;
+use NatePage\Standards\Traits\ToolsAwareTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class StandardsCommand extends Command
+class StandardsCommand extends Command implements ToolsAwareInterface
 {
+    use ToolsAwareTrait;
+
     public const EXIT_CODE_ERROR = 1;
     public const EXIT_CODE_SUCCESS = 0;
 
@@ -27,23 +33,17 @@ class StandardsCommand extends Command
     private $config;
 
     /**
-     * @var \NatePage\Standards\Interfaces\ToolsCollectionInterface
-     */
-    private $tools;
-
-    /**
      * StandardsCommand constructor.
      *
-     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
-     * @param \NatePage\Standards\Interfaces\ToolsCollectionInterface $tools
-     * @param null|string $name
+     * @param null|\NatePage\Standards\Interfaces\ConfigInterface $config
+     * @param null|\NatePage\Standards\Interfaces\ToolsCollectionInterface $tools
      */
-    public function __construct(ConfigInterface $config, ToolsCollectionInterface $tools, ?string $name = null)
+    public function __construct(?ConfigInterface $config = null, ?ToolsCollectionInterface $tools = null)
     {
-        $this->config = $config;
-        $this->tools = $tools;
+        $this->config = $config ?? new Config();
+        $this->tools = $tools ?? (new DefaultToolsCollectionHelper())->getTools();
 
-        parent::__construct($name);
+        parent::__construct();
     }
 
     /**
@@ -56,7 +56,7 @@ class StandardsCommand extends Command
         parent::configure();
 
         $this
-            ->setName('check')
+            ->setName('standards')
             ->setDescription('Check the code against the coding standards');
 
         // Add global options to config
@@ -154,6 +154,7 @@ class StandardsCommand extends Command
             return self::EXIT_CODE_ERROR;
         }
 
+        // Otherwise it's successful, render champion message and return success exit code
         $outputHelper->success('It all looks fine to me you fucking champion!');
 
         return self::EXIT_CODE_SUCCESS;
