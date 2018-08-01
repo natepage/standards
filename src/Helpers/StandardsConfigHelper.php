@@ -12,6 +12,26 @@ class StandardsConfigHelper implements ConfigAwareInterface
     use ConfigAwareTrait;
 
     /**
+     * Get tool ids.
+     *
+     * @return string[]
+     */
+    public function getToolsId(): array
+    {
+        $ids = [];
+
+        foreach ($this->config->getOptions() as $toolId => $options) {
+            if (\is_int($toolId)) {
+                continue;
+            }
+
+            $ids[] = $toolId;
+        }
+
+        return $ids;
+    }
+
+    /**
      * Enable or disable tools based on config.
      *
      * @return \NatePage\Standards\Helpers\StandardsConfigHelper
@@ -89,25 +109,5 @@ class StandardsConfigHelper implements ConfigAwareInterface
             'None of configured paths has been found. Paths: %s',
             $paths
         ));
-    }
-
-    /**
-     * Get tool ids.
-     *
-     * @return string[]
-     */
-    private function getToolsId(): array
-    {
-        $ids = [];
-
-        foreach ($this->config->getOptions() as $toolId => $options) {
-            if (\is_int($toolId)) {
-                continue;
-            }
-
-            $ids[] = $toolId;
-        }
-
-        return $ids;
     }
 }

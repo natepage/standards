@@ -27,11 +27,25 @@ class StandardsOutputHelper implements ConsoleAwareInterface
             return;
         }
 
+        $configHelper = new StandardsConfigHelper();
+        $configHelper->setConfig($config);
+
+        $dump = $config->dump();
+
         $style = $this->getStyle();
         $style->section('Config');
 
+        $toolsId = $configHelper->getToolsId();
         $rows = [];
-        foreach ($config->dump() as $key => $value) {
+
+        foreach ($dump as $key => $value) {
+            $toolId = \explode('.', $key)[0] ?? null;
+
+            // Skip config for disabled tools
+            if (\in_array($toolId, $toolsId, true) && ($dump[\sprintf('%s.enabled', $toolId)] ?? false) === false) {
+                continue;
+            }
+
             $rows[] = [$key, $this->toString($value)];
         }
 
