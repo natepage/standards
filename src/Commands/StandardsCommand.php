@@ -63,7 +63,8 @@ class StandardsCommand extends Command
         $this->config->addOptions([
             new ConfigOption('display-config', false, 'Display config'),
             new ConfigOption('only', null, 'Run only specified tools'),
-            new ConfigOption('paths', 'app,src,tests', 'Specify the paths to run the tools on')
+            new ConfigOption('paths', 'app,src,tests', 'Specify the paths to run the tools on'),
+            new ConfigOption('exit-on-failure', false, 'Exit on failure on not')
         ]);
 
         // Add tools options to config
@@ -202,6 +203,7 @@ class StandardsCommand extends Command
     {
         $toolsRunner = new ToolsRunner();
 
+        $toolsRunner->setConfig($this->config);
         $toolsRunner->setInput($input);
         $toolsRunner->setOutput($output);
 

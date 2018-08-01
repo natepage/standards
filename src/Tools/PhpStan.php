@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
-use NatePage\Standards\Configs\ConfigOption;
-use NatePage\Standards\Interfaces\ConfigInterface;
-
 class PhpStan extends WithConfigTool
 {
     /**
@@ -47,21 +44,5 @@ class PhpStan extends WithConfigTool
     public function getName(): string
     {
         return 'PHPSTAN';
-    }
-
-    /**
-     * Define tool options.
-     *
-     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
-     *
-     * @return void
-     */
-    protected function defineOptions(ConfigInterface $config): void
-    {
-        $config->addOption(new ConfigOption(
-            'reporting_level',
-            7,
-            'The reporting level, 1 = loose, 7 = strict'
-        ), $this->getId());
     }
 }

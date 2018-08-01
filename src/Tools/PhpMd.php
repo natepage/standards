@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
-use NatePage\Standards\Configs\ConfigOption;
-use NatePage\Standards\Interfaces\ConfigInterface;
-
 class PhpMd extends WithConfigTool
 {
     /**
@@ -41,24 +38,5 @@ class PhpMd extends WithConfigTool
     public function getName(): string
     {
         return 'PHPMD';
-    }
-
-    /**
-     * Define tool options.
-     *
-     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
-     *
-     * @return void
-     */
-    protected function defineOptions(ConfigInterface $config): void
-    {
-        $config->addOption(
-            new ConfigOption(
-                'rule_sets',
-                'cleancode,codesize,controversial,design,naming,unusedcode',
-                'The rulesets to use to determine issues, will be ignored if phpmd.xml exists'
-            ),
-            $this->getId()
-        );
     }
 }

@@ -4,10 +4,8 @@ declare(strict_types=1);
 namespace NatePage\Standards\Tools;
 
 use EoneoPay\Utils\XmlConverter;
-use NatePage\Standards\Configs\ConfigOption;
 use NatePage\Standards\Exceptions\BinaryNotFoundException;
 use NatePage\Standards\Exceptions\UnableToRunToolException;
-use NatePage\Standards\Interfaces\ConfigInterface;
 use NatePage\Standards\Interfaces\HasProcessInterface;
 use NatePage\Standards\Interfaces\HasProcessRunnerInterface;
 use NatePage\Standards\Interfaces\ProcessRunnerInterface;
@@ -117,44 +115,6 @@ class PhpUnit extends WithConfigTool implements HasProcessInterface, HasProcessR
         }
 
         return new PhpUnitProcessRunner((int)$this->config->get('phpunit.coverage_minimum_level'));
-    }
-
-    /**
-     * Define tool options.
-     *
-     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
-     *
-     * @return void
-     */
-    protected function defineOptions(ConfigInterface $config): void
-    {
-        $config->addOptions([
-            new ConfigOption(
-                'config_file',
-                'phpunit.xml',
-                'Config file to use to run PHPUnit'
-            ),
-            new ConfigOption(
-                'coverage_minimum_level',
-                90,
-                'The minimum percentage of coverage to have, will be ignored if coverage check is disabled'
-            ),
-            new ConfigOption(
-                'enable_code_coverage',
-                true,
-                'Whether or not to enable code coverage checks'
-            ),
-            new ConfigOption(
-                'junit_log_path',
-                null,
-                'The path to output junit parseable log file, can be relative, will be ignored if left blank'
-            ),
-            new ConfigOption(
-                'test_directory',
-                'tests',
-                'The directory containing tests, will be ignored it phpunit.xml exists in working directory'
-            )
-        ], $this->getId());
     }
 
     /**

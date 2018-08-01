@@ -5,7 +5,6 @@ namespace NatePage\Standards;
 
 use NatePage\Standards\Commands\StandardsCommand;
 use NatePage\Standards\Configs\Config;
-use NatePage\Standards\Interfaces\ConfigInterface;
 use NatePage\Standards\Interfaces\KernelInterface;
 use NatePage\Standards\Traits\ToolsAwareTrait;
 use Symfony\Component\Console\Application;
@@ -30,12 +29,12 @@ class Kernel implements KernelInterface
     /**
      * Kernel constructor.
      *
-     * @param null|\NatePage\Standards\Interfaces\ConfigInterface $config
+     * @param null|mixed[] $config
      * @param null|\Symfony\Component\Console\Application $console
      */
-    public function __construct(?ConfigInterface $config = null, ?Application $console = null)
+    public function __construct(?array $config = null, ?Application $console = null)
     {
-        $this->config = $config ?? new Config();
+        $this->config = new Config($config);
         $this->console = $console ?? new Application(self::NAME, self::VERSION);
     }
 

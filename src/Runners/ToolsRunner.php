@@ -3,20 +3,23 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Runners;
 
+use NatePage\Standards\Interfaces\ConfigAwareInterface;
 use NatePage\Standards\Interfaces\HasProcessInterface;
 use NatePage\Standards\Interfaces\HasProcessRunnerInterface;
 use NatePage\Standards\Interfaces\ProcessRunnerInterface;
 use NatePage\Standards\Interfaces\ToolInterface;
 use NatePage\Standards\Interfaces\ToolsRunnerInterface;
 use NatePage\Standards\Output\ConsoleSectionOutput;
+use NatePage\Standards\Traits\ConfigAwareTrait;
 use NatePage\Standards\Traits\ToolsAwareTrait;
 use NatePage\Standards\Traits\UsesStyle;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
+class ToolsRunner extends WithConsoleRunner implements ConfigAwareInterface, ToolsRunnerInterface
 {
+    use ConfigAwareTrait;
     use ToolsAwareTrait;
     use UsesStyle;
 
@@ -93,12 +96,16 @@ class ToolsRunner extends WithConsoleRunner implements ToolsRunnerInterface
                     continue;
                 }
 
+                $processRunner->close();
+
                 // If process not successful, tools runner not successful neither
                 if ($processRunner->isSuccessful() === false) {
                     $this->successful = false;
-                }
 
-                $processRunner->close();
+                    if ((bool)$this->config->get('exit-on-failure')) {
+                        return;
+                    }
+                }
 
                 unset($this->runnings[$index]);
             }

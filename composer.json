@@ -7,7 +7,9 @@
         "php": "^7.1",
         "symfony/process": "4.1.*",
         "symfony/console": "4.1.*",
-        "eoneopay/utils": "dev-master"
+        "eoneopay/utils": "dev-master",
+        "symfony/yaml": "^4.1",
+        "brianium/paratest": "^2.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master"

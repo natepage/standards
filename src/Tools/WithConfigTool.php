@@ -4,28 +4,23 @@ declare(strict_types=1);
 namespace NatePage\Standards\Tools;
 
 use NatePage\Standards\Configs\ConfigOption;
-use NatePage\Standards\Exceptions\BinaryNotFoundException;
 use NatePage\Standards\Interfaces\ConfigAwareInterface;
 use NatePage\Standards\Interfaces\ConfigInterface;
-use NatePage\Standards\Interfaces\ToolInterface;
 use NatePage\Standards\Traits\ConfigAwareTrait;
-use Symfony\Component\Process\Process;
+use Symfony\Component\Yaml\Yaml;
 
-abstract class WithConfigTool implements ConfigAwareInterface, ToolInterface
+/** @noinspection LowerAccessLevelInspection $options is used by the children tools */
+
+abstract class WithConfigTool extends AbstractTool implements ConfigAwareInterface
 {
     use ConfigAwareTrait {
         setConfig as private traitSetConfig;
     }
 
     /**
-     * Get tool description.
-     *
-     * @return null|string
+     * @var mixed[]
      */
-    public function getDescription(): ?string
-    {
-        return null;
-    }
+    protected static $options;
 
     /**
      * Set config.
@@ -45,65 +40,95 @@ abstract class WithConfigTool implements ConfigAwareInterface, ToolInterface
             \sprintf('Whether or not to run %s', $this->getId())
         ), $this->getId());
 
-        $this->defineOptions($config);
+        $options = $this->getOptions();
+        if (isset($options[$this->getId()]) === false) {
+            return;
+        }
+
+        foreach ($options[$this->getId()] as $name => $attributes) {
+            if (\is_array($attributes) === false) {
+                $config->addOption(new ConfigOption($name, $attributes), $this->getId());
+
+                continue;
+            }
+
+            $config->addOption(new ConfigOption(
+                $name,
+                $attributes['default'] ?? null,
+                $attributes['description'] ?? null,
+                $attributes['exposed'] ?? null
+            ), $this->getId());
+        }
     }
 
     /**
-     * Define tool options.
+     * Get options from config/tools.yaml, return empty array if file doesn't exist.
      *
-     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
-     *
-     * @return void
+     * @return mixed[]
      */
-    abstract protected function defineOptions(ConfigInterface $config): void;
-
-    /**
-     * Resolve given binary or return null.
-     *
-     * @param null|string $binary
-     *
-     * @return string
-     *
-     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException If binary not found
-     */
-    protected function resolveBinary(?string $binary = null): string
+    private function getOptions(): array
     {
-        $binary = $binary ?? $this->getId();
-
-        // Try inspected project vendor
-        $vendor = \sprintf('vendor/bin/%s', $binary);
-
-        if (\file_exists($vendor)) {
-            return $vendor;
+        if (static::$options !== null) {
+            return static::$options;
         }
 
-        // Try command line tool
-        $process = new Process(\sprintf('command -v %s', $binary));
-        $process->run();
-        $command = $process->getOutput();
+        $configTools = __DIR__ . '/../../config/tools.yaml';
 
-        if (empty($command) === false && $process->isSuccessful()) {
-            return \trim($command);
+        if (\file_exists($configTools) === false) {
+            return [];
         }
 
-        // Fallback to standards binary
-        if (\defined('NP_STANDARDS_INTERNAL_VENDOR')
-            && \file_exists(\sprintf('%sbin/%s', NP_STANDARDS_INTERNAL_VENDOR, $binary))) {
-            return \sprintf('%sbin/%s', NP_STANDARDS_INTERNAL_VENDOR, $binary);
+        $loaded = Yaml::parse(\file_get_contents($configTools), Yaml::PARSE_CONSTANT) ?? [];
+
+        // Resolve parameters
+        if (empty($loaded['parameters'] ?? null) === false) {
+            $loaded = $this->resolveParameters($loaded, $loaded['parameters']);
         }
 
-        throw new BinaryNotFoundException(\sprintf('Binary for %s not found.', $binary));
+        return static::$options = $loaded;
     }
 
     /**
-     * Return paths separated by spaces instead of commas.
+     * Resolve parameters in strings.
      *
-     * @param string $paths
+     * @param mixed[] $options
+     * @param mixed[] $parameters
      *
-     * @return string
+     * @return mixed[]
      */
-    protected function spacePaths(string $paths): string
+    private function resolveParameters(array $options, array $parameters): array
     {
-        return \str_replace(',', ' ', $paths);
+        foreach ($options as $name => $attributes) {
+            if ($name === 'parameters') {
+                continue;
+            }
+
+            if (\is_array($attributes)) {
+                $options[$name] = $this->resolveParameters($attributes, $parameters);
+
+                continue;
+            }
+
+            if (\is_string($attributes) === false) {
+                continue;
+            }
+
+            if (\preg_match_all('/%([\w.]+)%/', $attributes, $matches)) {
+                $params = $matches[1] ?? [];
+                $replace = [];
+
+                foreach ($params as $param) {
+                    if (\array_key_exists($param, $parameters) === false) {
+                        continue;
+                    }
+
+                    $replace[\sprintf('%%%s%%', $param)] = $parameters[$param];
+                }
+
+                $options[$name] = \strtr($options[$name], $replace);
+            }
+        }
+
+        return $options;
     }
 }

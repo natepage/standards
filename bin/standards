@@ -7,7 +7,7 @@ require_once __DIR__ . '/../bootstrap/autoload.php';
 use NatePage\Standards\Helpers\DefaultToolsCollectionHelper;
 use NatePage\Standards\Kernel;
 
-$app = new Kernel();
+$app = new Kernel(['phpunit.coverage_minimum_level' => 50]);
 $app->setTools((new DefaultToolsCollectionHelper())->getTools());
 
 /** @noinspection PhpUnhandledExceptionInspection */

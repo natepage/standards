@@ -25,6 +25,21 @@ class Config implements ConfigInterface
     private $options = [];
 
     /**
+     * @var mixed[]
+     */
+    private $override;
+
+    /**
+     * Config constructor.
+     *
+     * @param mixed[]|null $override
+     */
+    public function __construct(?array $override = null)
+    {
+        $this->override = $override ?? [];
+    }
+
+    /**
      * Add option.
      *
      * @param \NatePage\Standards\Interfaces\ConfigOptionInterface $option
@@ -150,6 +165,13 @@ class Config implements ConfigInterface
 
                 if (\is_bool($option->getDefault())) {
                     $cache[$key] = $this->getBoolValue($key);
+
+                    continue;
+                }
+
+                // If config is default, then try to use override else fallback to default
+                if ($this->config[$key] === $option->getDefault()) {
+                    $cache[$key] = $this->override[$key] ?? $option->getDefault();
 
                     continue;
                 }

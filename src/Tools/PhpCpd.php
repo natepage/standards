@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
-use NatePage\Standards\Configs\ConfigOption;
-use NatePage\Standards\Interfaces\ConfigInterface;
-
 class PhpCpd extends WithConfigTool
 {
     /**
@@ -46,28 +43,5 @@ class PhpCpd extends WithConfigTool
     public function getName(): string
     {
         return 'PHPCPD';
-    }
-
-    /**
-     * Define tool options.
-     *
-     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
-     *
-     * @return void
-     */
-    protected function defineOptions(ConfigInterface $config): void
-    {
-        $config->addOptions([
-            new ConfigOption(
-                'min_lines',
-                5,
-                'The minimum number of lines which need to be duplicated to count as copy/paste'
-            ),
-            new ConfigOption(
-                'min_tokens',
-                70,
-                'The minimum number of duplicated tokens within a line to count as copy/paste'
-            )
-        ], $this->getId());
     }
 }

@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
-use NatePage\Standards\Configs\ConfigOption;
-use NatePage\Standards\Interfaces\ConfigInterface;
-
 class PhpCs extends WithConfigTool
 {
     /**
@@ -51,28 +48,5 @@ class PhpCs extends WithConfigTool
     public function getName(): string
     {
         return 'PHPCS';
-    }
-
-    /**
-     * Define tool options.
-     *
-     * @param \NatePage\Standards\Interfaces\ConfigInterface $config
-     *
-     * @return void
-     */
-    protected function defineOptions(ConfigInterface $config): void
-    {
-        $config->addOptions([
-            new ConfigOption(
-                'standards',
-                \sprintf('%s/../../sniffs/NatePage', __DIR__),
-                'The standards to compare code against, will be ignored if phpcs.xml exists'
-            ),
-            new ConfigOption(
-                'show_sniff_name',
-                true,
-                'Whether to show the code sniffs name on report output'
-            )
-        ], $this->getId());
     }
 }
