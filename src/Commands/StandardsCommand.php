@@ -65,9 +65,10 @@ class StandardsCommand extends Command implements ToolsAwareInterface
         // Add global options to config
         $this->config->addOptions([
             new ConfigOption('display-config', false, 'Display config'),
+            new ConfigOption('exit-on-failure', false, 'Exit on failure or not'),
+            new ConfigOption('exit-on-binary-missing', false, 'Exit on binary missing or not'),
             new ConfigOption('only', null, 'Run only specified tools'),
-            new ConfigOption('paths', 'app,src,tests', 'Specify the paths to run the tools on'),
-            new ConfigOption('exit-on-failure', false, 'Exit on failure on not')
+            new ConfigOption('paths', 'app,src,tests', 'Specify the paths to run the tools on')
         ]);
 
         // Add tools options to config

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Runners;
 
+use NatePage\Standards\Exceptions\BinaryNotFoundException;
 use NatePage\Standards\Interfaces\ConfigAwareInterface;
 use NatePage\Standards\Interfaces\HasProcessRunnerInterface;
 use NatePage\Standards\Interfaces\ProcessRunnerInterface;
@@ -63,6 +64,8 @@ class ToolsRunner extends WithConsoleRunner implements ConfigAwareInterface, Too
      * Do run current instance.
      *
      * @return void
+     *
+     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException If binary missing and exit-on-binary-missing true
      */
     protected function doRun(): void
     {
@@ -76,9 +79,21 @@ class ToolsRunner extends WithConsoleRunner implements ConfigAwareInterface, Too
 
         foreach ($this->tools->all() as $tool) {
             $output = $this->getOutputForProcess();
-            $processRunner = $this->getProcessRunner($tool, $output);
-
             $output->writeln(\sprintf('<comment>%s</>', $tool->getName()));
+
+            try {
+                $processRunner = $this->getProcessRunner($tool, $output);
+            } /** @noinspection PhpRedundantCatchClauseInspection */ catch (BinaryNotFoundException $exception) {
+                if (((bool)$this->config->get('exit-on-binary-missing')) === true) {
+                    throw $exception;
+                }
+
+                // If binary not found, warning and skip, but don't fail. This way we can require only wanted tools
+                $output->write(\sprintf('<comment>[SKIP]</> %s', $exception->getMessage()));
+                $output->writeln(' Please make sure you required all dependencies.');
+
+                continue;
+            }
 
             $this->runnings[] = $processRunner->run();
         }

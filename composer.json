@@ -13,6 +13,15 @@
     "require-dev": {
         "roave/security-advisories": "dev-master"
     },
+    "suggest": {
+        "brianium/paratest": "Run unit tests in parallel",
+        "ext-xdebug": "Calculate code coverage of unit tests",
+        "phpmd/phpmd": "Check coding best practices",
+        "phpstan/phpstan": "Static analysis of code to detect potential errors",
+        "phpunit/phpunit": "Run unit tests",
+        "sebastian/phpcpd": "Detect code duplication",
+        "squizlabs/php_codesniffer": "Check code style"
+    },
     "autoload": {
         "psr-4": { "NatePage\\Standards\\": "src/" }
     }
