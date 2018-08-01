@@ -19,7 +19,7 @@ function requireIfExists(string $dir): bool
     require_once $filename;
 
     // Define constant to be used as a fallback if binaries not found within inspected project
-    define('NP_STANDARDS_INTERNAL_VENDOR', $dir);
+    define('NPS_VENDOR_DIR', $dir);
 
     return true;
 }

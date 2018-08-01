@@ -40,6 +40,9 @@ class StandardsCommand extends Command implements ToolsAwareInterface
      */
     public function __construct(?ConfigInterface $config = null, ?ToolsCollectionInterface $tools = null)
     {
+        // Define package base path as constant to be used in YAML config
+        \define('NPS_BASE_PATH', __DIR__ . '/../../');
+
         $this->config = $config ?? new Config();
         $this->tools = $tools ?? (new DefaultToolsCollectionHelper())->getTools();
 

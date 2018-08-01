@@ -1,5 +1,5 @@
 parameters:
-    vendor: !php/const NP_STANDARDS_INTERNAL_VENDOR
+    base_path: !php/const NPS_BASE_PATH
 
 phpcpd:
     min_lines:
@@ -10,7 +10,7 @@ phpcpd:
         description: The minimum number of duplicated tokens within a line to count as copy/paste
 phpcs:
     standards:
-        default: '%vendor%../sniffs/NatePage'
+        default: '%base_path%sniffs/NatePage'
         description: The standards to compare code against, will be ignored if phpcs.xml exists
     show_sniff_name:
         default: true

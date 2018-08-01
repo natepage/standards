@@ -49,9 +49,8 @@ abstract class AbstractTool implements ToolInterface
         }
 
         // Fallback to standards binary
-        if (\defined('NP_STANDARDS_INTERNAL_VENDOR')
-            && \file_exists(\sprintf('%sbin/%s', NP_STANDARDS_INTERNAL_VENDOR, $binary))) {
-            return \sprintf('%sbin/%s', NP_STANDARDS_INTERNAL_VENDOR, $binary);
+        if (\defined('NPS_VENDOR_DIR') && \file_exists(\sprintf('%sbin/%s', NPS_VENDOR_DIR, $binary))) {
+            return \sprintf('%sbin/%s', NPS_VENDOR_DIR, $binary);
         }
 
         throw new BinaryNotFoundException(\sprintf('Binary for %s not found.', $binary));
