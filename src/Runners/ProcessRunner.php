@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Runners;
 
+use NatePage\Standards\Interfaces\ProcessInterface;
 use NatePage\Standards\Interfaces\ProcessRunnerInterface;
-use Symfony\Component\Process\Process;
 
 class ProcessRunner extends WithConsoleRunner implements ProcessRunnerInterface
 {
@@ -58,11 +58,11 @@ class ProcessRunner extends WithConsoleRunner implements ProcessRunnerInterface
     /**
      * Set process to run.
      *
-     * @param \Symfony\Component\Process\Process $process
+     * @param \NatePage\Standards\Interfaces\ProcessInterface
      *
      * @return \NatePage\Standards\Interfaces\ProcessRunnerInterface
      */
-    public function setProcess(Process $process): ProcessRunnerInterface
+    public function setProcess(ProcessInterface $process): ProcessRunnerInterface
     {
         $this->process = $process;
 
@@ -84,7 +84,11 @@ class ProcessRunner extends WithConsoleRunner implements ProcessRunnerInterface
      */
     protected function doRun(): void
     {
-        $this->process->start(function ($type, $buffer): void {
+        $this->process->start(function (
+            /** @noinspection PhpUnusedParameterInspection */
+            $type,
+            $buffer
+        ): void {
             if ($this->output->isVerbose() === false) {
                 return;
             }

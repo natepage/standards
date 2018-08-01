@@ -6,21 +6,6 @@ namespace NatePage\Standards\Tools;
 class PhpMd extends WithConfigTool
 {
     /**
-     * Get command line to execute the tool.
-     *
-     * @return string
-     *
-     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException If binary not found
-     */
-    public function getCli(): string
-    {
-        $config = $this->config->dump();
-        $rules = \file_exists('phpmd.xml') ? 'phpmd.xml' : $config['phpmd.rule_sets'];
-
-        return \sprintf('%s %s text %s', $this->resolveBinary(), $config['paths'], $rules);
-    }
-
-    /**
      * Get tool identifier.
      *
      * @return string
@@ -38,5 +23,18 @@ class PhpMd extends WithConfigTool
     public function getName(): string
     {
         return 'PHPMD';
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException If binary not found
+     */
+    protected function getCli(): string
+    {
+        $config = $this->config->dump();
+        $rules = \file_exists('phpmd.xml') ? 'phpmd.xml' : $config['phpmd.rule_sets'];
+
+        return \sprintf('%s %s text %s', $this->resolveBinary(), $config['paths'], $rules);
     }
 }

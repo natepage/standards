@@ -6,20 +6,6 @@ namespace NatePage\Standards\Interfaces;
 interface ToolInterface
 {
     /**
-     * Get command line to execute the tool.
-     *
-     * @return string
-     */
-    public function getCli(): string;
-
-    /**
-     * Get tool description.
-     *
-     * @return null|string
-     */
-    public function getDescription(): ?string;
-
-    /**
      * Get tool identifier.
      *
      * @return string
@@ -32,4 +18,11 @@ interface ToolInterface
      * @return string
      */
     public function getName(): string;
+
+    /**
+     * Get tool process to run.
+     *
+     * @return \NatePage\Standards\Interfaces\ProcessInterface
+     */
+    public function getProcess(): ProcessInterface;
 }

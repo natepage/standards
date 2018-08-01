@@ -4,20 +4,27 @@ declare(strict_types=1);
 namespace NatePage\Standards\Tools;
 
 use NatePage\Standards\Exceptions\BinaryNotFoundException;
+use NatePage\Standards\Interfaces\ProcessInterface;
 use NatePage\Standards\Interfaces\ToolInterface;
+use NatePage\Standards\Processes\CliProcess;
 use Symfony\Component\Process\Process;
 
 abstract class AbstractTool implements ToolInterface
 {
     /**
-     * Get tool description.
-     *
-     * @return null|string
+     * {@inheritdoc}
      */
-    public function getDescription(): ?string
+    public function getProcess(): ProcessInterface
     {
-        return null;
+        return new CliProcess($this->getCli());
     }
+
+    /**
+     * Get command line to execute the tool.
+     *
+     * @return string
+     */
+    abstract protected function getCli(): string;
 
     /**
      * Resolve given binary or return null.

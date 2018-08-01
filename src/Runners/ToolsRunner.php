@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace NatePage\Standards\Runners;
 
 use NatePage\Standards\Interfaces\ConfigAwareInterface;
-use NatePage\Standards\Interfaces\HasProcessInterface;
 use NatePage\Standards\Interfaces\HasProcessRunnerInterface;
 use NatePage\Standards\Interfaces\ProcessRunnerInterface;
 use NatePage\Standards\Interfaces\ToolInterface;
@@ -15,7 +14,6 @@ use NatePage\Standards\Traits\ToolsAwareTrait;
 use NatePage\Standards\Traits\UsesStyle;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 class ToolsRunner extends WithConsoleRunner implements ConfigAwareInterface, ToolsRunnerInterface
 {
@@ -146,8 +144,6 @@ class ToolsRunner extends WithConsoleRunner implements ConfigAwareInterface, Too
         $processRunner->setInput($this->input);
         $processRunner->setOutput($output);
 
-        return $processRunner->setProcess(
-            $tool instanceof HasProcessInterface ? $tool->getProcess() : new Process($tool->getCli())
-        );
+        return $processRunner->setProcess($tool->getProcess());
     }
 }

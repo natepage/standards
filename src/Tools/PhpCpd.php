@@ -6,13 +6,11 @@ namespace NatePage\Standards\Tools;
 class PhpCpd extends WithConfigTool
 {
     /**
-     * Get command line to execute the tool.
-     *
-     * @return string
+     * {@inheritdoc}
      *
      * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
      */
-    public function getCli(): string
+    protected function getCli(): string
     {
         $config = $this->config->dump();
 

@@ -6,26 +6,88 @@ namespace NatePage\Standards\Tools;
 use EoneoPay\Utils\XmlConverter;
 use NatePage\Standards\Exceptions\BinaryNotFoundException;
 use NatePage\Standards\Exceptions\UnableToRunToolException;
-use NatePage\Standards\Interfaces\HasProcessInterface;
 use NatePage\Standards\Interfaces\HasProcessRunnerInterface;
+use NatePage\Standards\Interfaces\ProcessInterface;
 use NatePage\Standards\Interfaces\ProcessRunnerInterface;
+use NatePage\Standards\Processes\CliProcess;
 use NatePage\Standards\Runners\PhpUnitProcessRunner;
 use NatePage\Standards\Runners\ProcessRunner;
-use Symfony\Component\Process\Process;
 
-class PhpUnit extends WithConfigTool implements HasProcessInterface, HasProcessRunnerInterface
+class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
 {
     private const AUTOLOAD = 'vendor/autoload.php';
 
     /**
-     * Get command line to execute the tool.
+     * Get tool identifier.
      *
      * @return string
+     */
+    public function getId(): string
+    {
+        return 'phpunit';
+    }
+
+    /**
+     * Get tool name.
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return 'PHPUNIT';
+    }
+
+    /**
+     * Get process.
+     *
+     * @return \NatePage\Standards\Interfaces\ProcessInterface
+     *
+     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
+     * @throws \NatePage\Standards\Exceptions\UnableToRunToolException
+     * @throws \EoneoPay\Utils\Exceptions\InvalidXmlException
+     */
+    public function getProcess(): ProcessInterface
+    {
+        $phpUnitConfig = (new XmlConverter())->xmlToArray(
+            \file_get_contents($this->config->get('phpunit.config_file')),
+            XmlConverter::XML_INCLUDE_ATTRIBUTES
+        );
+
+        $env = [];
+        foreach ($phpUnitConfig['php']['env'] ?? [] as $node) {
+            $name = $node['@attributes']['name'] ?? null;
+
+            if ($name === null) {
+                continue;
+            }
+
+            $env[$name] = $node['@attributes']['value'] ?? 'NULL';
+        }
+
+        return new CliProcess($this->getCli(), null, $env);
+    }
+
+    /**
+     * Get process runner.
+     *
+     * @return \NatePage\Standards\Interfaces\ProcessRunnerInterface
+     */
+    public function getProcessRunner(): ProcessRunnerInterface
+    {
+        if ($this->config->get('phpunit.enable_code_coverage') === false) {
+            return new ProcessRunner();
+        }
+
+        return new PhpUnitProcessRunner((int)$this->config->get('phpunit.coverage_minimum_level'));
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * @throws \NatePage\Standards\Exceptions\UnableToRunToolException
      * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
      */
-    public function getCli(): string
+    protected function getCli(): string
     {
         $config = $this->config->dump();
 
@@ -51,70 +113,6 @@ class PhpUnit extends WithConfigTool implements HasProcessInterface, HasProcessR
         }
 
         return $cli;
-    }
-
-    /**
-     * Get tool identifier.
-     *
-     * @return string
-     */
-    public function getId(): string
-    {
-        return 'phpunit';
-    }
-
-    /**
-     * Get tool name.
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        return 'PHPUNIT';
-    }
-
-    /**
-     * Get process.
-     *
-     * @return \Symfony\Component\Process\Process
-     *
-     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
-     * @throws \NatePage\Standards\Exceptions\UnableToRunToolException
-     * @throws \EoneoPay\Utils\Exceptions\InvalidXmlException
-     */
-    public function getProcess(): Process
-    {
-        $phpUnitConfig = (new XmlConverter())->xmlToArray(
-            \file_get_contents($this->config->get('phpunit.config_file')),
-            XmlConverter::XML_INCLUDE_ATTRIBUTES
-        );
-
-        $env = [];
-        foreach ($phpUnitConfig['php']['env'] ?? [] as $node) {
-            $name = $node['@attributes']['name'] ?? null;
-
-            if ($name === null) {
-                continue;
-            }
-
-            $env[$name] = $node['@attributes']['value'] ?? 'NULL';
-        }
-
-        return new Process($this->getCli(), null, $env);
-    }
-
-    /**
-     * Get process runner.
-     *
-     * @return \NatePage\Standards\Interfaces\ProcessRunnerInterface
-     */
-    public function getProcessRunner(): ProcessRunnerInterface
-    {
-        if ($this->config->get('phpunit.enable_code_coverage') === false) {
-            return new ProcessRunner();
-        }
-
-        return new PhpUnitProcessRunner((int)$this->config->get('phpunit.coverage_minimum_level'));
     }
 
     /**
