@@ -132,28 +132,28 @@ To know more about all available input options simply use the `-h|-help` option 
 
 Config | Default | Description
 -------|---------|------------
-display-config | true | Display configuration used to run tools
-exit-on-binary-missing | false | Exit on binary missing or not
-exit-on-failure | false | Exit on failure or not
-only | NULL | Comma separated list of tools to run
-paths | app,src,tests | Comma separated list of directories to run tools on
-phpcpd.enabled | true | Enable/Disable PHPCPD
-phpcpd.min_lines | 5 | The minimum number of lines which need to be duplicated to count as copy/paste
-phpcpd.min_tokens | 70 | The minimum number of tokens which need to be duplicated to count as copy/paste
-phpcs.enabled | true | Enable/Disable PHPCS
-phpcs.show_sniff_name | true | Whether to show the code sniffs name on report output
-phpcs.standards | %standards_path%/sniffs/NatePage | The standards to compare code against, will be ignored if phpcs.xml exists
-phpmd.enabled | true | Enable/Disable PHPMD
-phpmd.rule_sets | cleancode,codesize,controversial,design,naming,unusedcode | The rulesets to use to determine issues, will be ignored if phpmd.xml exists
-phpstan.enabled | true | Enable/Disable PHPStan
-phpstan.reporting_level | 7 | The reporting level, 1 = loose, 7 = strict
-phpunit.config_file | phpunit.xml | Config file to use to run PHPUnit
-phpunit.coverage_minimum_level | 90 | The minimum percentage of coverage to have, will be ignored if coverage check is disabled
-phpunit.enable_code_coverage | true | Enable/Disable code coverage
-phpunit.enabled | true | Enable/Disable PHPUnit
-phpunit.junit_log_path | NULL | The path to output junit parseable log file, can be relative, will be ignored if left blank
-phpunit.paratest_processes_number | 8 | Number of processes to run when using paratest
-phpunit.test_directory | tests  | The directory containing tests, will be ignored it phpunit.xml exists in working directory
+display-config | Display configuration used to run tools | true
+exit-on-binary-missing | Exit on binary missing or not | false
+exit-on-failure | Exit on failure or not | false
+only | Comma separated list of tools to run | NULL
+paths | Comma separated list of directories to run tools on | app,src,tests
+phpcpd.enabled | Enable/Disable PHPCPD | true
+phpcpd.min_lines | The minimum number of lines which need to be duplicated to count as copy/paste | 5
+phpcpd.min_tokens | The minimum number of tokens which need to be duplicated to count as copy/paste | 70
+phpcs.enabled | Enable/Disable PHPCS | true
+phpcs.show_sniff_name | Whether to show the code sniffs name on report output | true
+phpcs.standards | The standards to compare code against, will be ignored if phpcs.xml exists | %standards_path%/sniffs/NatePage
+phpmd.enabled | Enable/Disable PHPMD | true
+phpmd.rule_sets | The rulesets to use to determine issues, will be ignored if phpmd.xml exists | cleancode,codesize,controversial,design,naming,unusedcode
+phpstan.enabled | Enable/Disable PHPStan | true
+phpstan.reporting_level | The reporting level, 1 = loose, 7 = strict | 7
+phpunit.config_file | Config file to use to run PHPUnit | phpunit.xml
+phpunit.coverage_minimum_level | The minimum percentage of coverage to have, will be ignored if coverage check is disabled | 90
+phpunit.enable_code_coverage | Enable/Disable code coverage | true
+phpunit.enabled | Enable/Disable PHPUnit | true
+phpunit.junit_log_path | The path to output junit parseable log file, can be relative, will be ignored if left blank | NULL
+phpunit.paratest_processes_number | Number of processes to run when using paratest | 8
+phpunit.test_directory | The directory containing tests, will be ignored it phpunit.xml exists in working directory | tests
 
 [1]: https://github.com/natepage/standards
 [2]: https://getcomposer.org/
