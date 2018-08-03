@@ -152,7 +152,11 @@ class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
             return null;
         }
 
-        return \sprintf('%s -p8 --runner=WrapperRunner --colors', $binary);
+        return \sprintf(
+            '%s -p%d --runner=WrapperRunner --colors',
+            $binary,
+            (int)$this->config->get('phpunit.paratest_processes_number')
+        );
     }
 
     /**

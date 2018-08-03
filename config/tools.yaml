@@ -9,12 +9,12 @@ phpcpd:
         default: 70
         description: The minimum number of duplicated tokens within a line to count as copy/paste
 phpcs:
-    standards:
-        default: '%base_path%sniffs/NatePage'
-        description: The standards to compare code against, will be ignored if phpcs.xml exists
     show_sniff_name:
         default: true
         description: Whether to show the code sniffs name on report output
+    standards:
+        default: '%base_path%sniffs/NatePage'
+        description: The standards to compare code against, will be ignored if phpcs.xml exists
 phpmd:
     rule_sets:
         default: cleancode,codesize,controversial,design,naming,unusedcode
@@ -35,6 +35,9 @@ phpunit:
         description: Whether or not to enable code coverage checks
     junit_log_path:
         description: The path to output junit parseable log file, can be relative, will be ignored if left blank
+    paratest_processes_number:
+        default: 8
+        description: Number of processes to run when using paratest
     test_directory:
         default: tests
         description: The directory containing tests, will be ignored it phpunit.xml exists in working directory

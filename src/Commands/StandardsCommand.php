@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Commands;
 
+use EoneoPay\Utils\Arr;
 use NatePage\Standards\Configs\Config;
 use NatePage\Standards\Configs\ConfigOption;
 use NatePage\Standards\Helpers\DefaultToolsCollectionHelper;
@@ -19,6 +20,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Yaml\Yaml;
 
 class StandardsCommand extends Command implements ToolsAwareInterface
 {
@@ -33,6 +35,11 @@ class StandardsCommand extends Command implements ToolsAwareInterface
     private $config;
 
     /**
+     * @var string
+     */
+    private $configFile = 'standards.yaml';
+
+    /**
      * StandardsCommand constructor.
      *
      * @param null|\NatePage\Standards\Interfaces\ConfigInterface $config
@@ -43,7 +50,7 @@ class StandardsCommand extends Command implements ToolsAwareInterface
         // Define package base path as constant to be used in YAML config
         \define('NPS_BASE_PATH', __DIR__ . '/../../');
 
-        $this->config = $config ?? new Config();
+        $this->config = $config ?? $this->getDefaultConfig();
         $this->tools = $tools ?? (new DefaultToolsCollectionHelper())->getTools();
 
         parent::__construct();
@@ -65,8 +72,8 @@ class StandardsCommand extends Command implements ToolsAwareInterface
         // Add global options to config
         $this->config->addOptions([
             new ConfigOption('display-config', false, 'Display config'),
-            new ConfigOption('exit-on-failure', false, 'Exit on failure or not'),
             new ConfigOption('exit-on-binary-missing', false, 'Exit on binary missing or not'),
+            new ConfigOption('exit-on-failure', false, 'Exit on failure or not'),
             new ConfigOption('only', null, 'Run only specified tools'),
             new ConfigOption('paths', 'app,src,tests', 'Specify the paths to run the tools on')
         ]);
@@ -176,6 +183,30 @@ class StandardsCommand extends Command implements ToolsAwareInterface
         $configHelper->setConfig($this->config);
 
         return $configHelper;
+    }
+
+    /**
+     * Get default config based on file if exists.
+     *
+     * @return \NatePage\Standards\Interfaces\ConfigInterface
+     */
+    private function getDefaultConfig(): ConfigInterface
+    {
+        $configFiles = [$this->configFile];
+
+        if (\defined('NPS_VENDOR_DIR')) {
+            $configFiles[] = \sprintf('%s../%s', NPS_VENDOR_DIR, $this->configFile);
+        }
+
+        foreach ($configFiles as $configFile) {
+            if (\file_exists($configFile) === false) {
+                continue;
+            }
+
+            return new Config((new Arr())->flatten(Yaml::parseFile($configFile, Yaml::PARSE_CONSTANT)));
+        }
+
+        return new Config();
     }
 
     /**

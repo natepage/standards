@@ -180,6 +180,8 @@ class Config implements ConfigInterface
             }
         }
 
+        \ksort($cache);
+
         return $cache;
     }
 
