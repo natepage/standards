@@ -48,20 +48,25 @@ class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
      */
     public function getProcess(): ProcessInterface
     {
-        $phpUnitConfig = (new XmlConverter())->xmlToArray(
-            \file_get_contents($this->config->get('phpunit.config_file')),
-            XmlConverter::XML_INCLUDE_ATTRIBUTES
-        );
-
+        $configFile = (string)$this->config->get('phpunit.config_file');
         $env = [];
-        foreach ($phpUnitConfig['php']['env'] ?? [] as $node) {
-            $name = $node['@attributes']['name'] ?? null;
 
-            if ($name === null) {
-                continue;
+        // If config file exists, get env values to pass them to process
+        if (\file_exists($configFile)) {
+            $phpUnitConfig = (new XmlConverter())->xmlToArray(
+                \file_get_contents($this->config->get('phpunit.config_file')),
+                XmlConverter::XML_INCLUDE_ATTRIBUTES
+            );
+
+            foreach ($phpUnitConfig['php']['env'] ?? [] as $node) {
+                $name = $node['@attributes']['name'] ?? null;
+
+                if ($name === null) {
+                    continue;
+                }
+
+                $env[$name] = $node['@attributes']['value'] ?? 'NULL';
             }
-
-            $env[$name] = $node['@attributes']['value'] ?? 'NULL';
         }
 
         return new CliProcess($this->getCli(), null, $env);
@@ -127,7 +132,7 @@ class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
     private function checkMinRequirements(array $config): bool
     {
         if (\file_exists($config['phpunit.config_file']) === false
-            && (\file_exists(self::AUTOLOAD) === false || \is_dir($config['phpunit.test_directory']))) {
+            && (\file_exists(self::AUTOLOAD) === false || \is_dir($config['phpunit.test_directory']) === false)) {
             throw new UnableToRunToolException(\sprintf(
                 'Unable to run phpunit as %s cannot be loaded and %s or %s is missing',
                 $config['phpunit.config_file'],
