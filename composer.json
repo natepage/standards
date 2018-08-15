@@ -22,6 +22,9 @@
         "sebastian/phpcpd": "Detect code duplication",
         "squizlabs/php_codesniffer": "Check code style"
     },
+    "bin": [
+        "bin/standards"
+    ],
     "autoload": {
         "psr-4": { "NatePage\\Standards\\": "src/" }
     }
