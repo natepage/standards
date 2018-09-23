@@ -1,0 +1,19 @@
+imports:
+    - { resource: 'services.yaml' }
+
+parameters:
+    standards:
+        display-config:
+            default: false
+            description: Display config values when running standards
+        exit-on-binary-missing:
+            default: false
+            description: Exit on binary missing
+        exit-on-failure:
+            default: false
+            description: Exit on failure
+        only:
+            description: Run only specified tools
+        paths:
+            default: app,src,tests
+            description: Specify the paths to run the tools on

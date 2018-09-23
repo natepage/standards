@@ -3,18 +3,10 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
-class PhpMd extends WithConfigTool
-{
-    /**
-     * Get tool identifier.
-     *
-     * @return string
-     */
-    public function getId(): string
-    {
-        return 'phpmd';
-    }
+use Symfony\Component\Process\Process;
 
+class PhpMd extends AbstractTool
+{
     /**
      * Get tool name.
      *
@@ -26,15 +18,41 @@ class PhpMd extends WithConfigTool
     }
 
     /**
-     * {@inheritdoc}
+     * Get tool options.
      *
-     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException If binary not found
+     * @return mixed[]
      */
-    protected function getCli(): string
+    public function getOptions(): array
     {
-        $config = $this->config->dump();
-        $rules = \file_exists('phpmd.xml') ? 'phpmd.xml' : $config['phpmd.rule_sets'];
+        return [
+            'config-file' => [
+                'default' => 'phpmd.xml',
+                'description' => 'Config file for PHP Mess Detector'
+            ],
+            'rule-sets' => [
+                'default' => 'cleancode,codesize,controversial,design,naming,unusedcode',
+                'description' => 'The rulesets to use to determine issues, will be ignored if config-file exists'
+            ]
+        ];
+    }
 
-        return \sprintf('%s %s text %s', $this->resolveBinary(), $config['paths'], $rules);
+    /**
+     * Get process to run.
+     *
+     * @return \Symfony\Component\Process\Process
+     *
+     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
+     */
+    public function getProcess(): Process
+    {
+        $configFile = $this->getOptionValue('config-file') ?? '';
+        $rules = \file_exists($configFile) ? $configFile : $this->getOptionValue('rule-sets');
+
+        return new Process([
+            $this->resolveBinary(),
+            $this->config->getValue('paths'),
+            'text',
+            $rules
+        ]);
     }
 }

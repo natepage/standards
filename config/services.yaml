@@ -1,0 +1,24 @@
+services:
+    _defaults:
+        autowire: true
+        public: true
+
+    # Application
+    NatePage\Standards\Console\Application: ~
+    NatePage\Standards\App\Config: ~
+    NatePage\Standards\Console\Commands\:
+        resource: '../src/Console/Commands'
+    NatePage\Standards\Tools\:
+        resource: '../src/Tools'
+
+    # Console
+    Symfony\Component\Console\Terminal: ~
+    Symfony\Component\Console\Input\ArgvInput: ~
+    Symfony\Component\Console\Input\InputInterface:
+        alias: Symfony\Component\Console\Input\ArgvInput
+    Symfony\Component\Console\Output\ConsoleOutput: ~
+    Symfony\Component\Console\Output\OutputInterface:
+        alias: Symfony\Component\Console\Output\ConsoleOutput
+
+    # Parameters
+    Symplify\PackageBuilder\Parameter\ParameterProvider: ~

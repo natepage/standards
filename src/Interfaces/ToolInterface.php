@@ -3,15 +3,10 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Interfaces;
 
+use Symfony\Component\Process\Process;
+
 interface ToolInterface
 {
-    /**
-     * Get tool identifier.
-     *
-     * @return string
-     */
-    public function getId(): string;
-
     /**
      * Get tool name.
      *
@@ -20,9 +15,16 @@ interface ToolInterface
     public function getName(): string;
 
     /**
-     * Get tool process to run.
+     * Get tool options.
      *
-     * @return \NatePage\Standards\Interfaces\ProcessInterface
+     * @return mixed[]
      */
-    public function getProcess(): ProcessInterface;
+    public function getOptions(): array;
+
+    /**
+     * Get process to run.
+     *
+     * @return \Symfony\Component\Process\Process
+     */
+    public function getProcess(): Process;
 }
