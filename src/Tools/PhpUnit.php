@@ -5,27 +5,12 @@ namespace NatePage\Standards\Tools;
 
 use EoneoPay\Utils\XmlConverter;
 use NatePage\Standards\Exceptions\BinaryNotFoundException;
-use NatePage\Standards\Exceptions\UnableToRunToolException;
-use NatePage\Standards\Interfaces\HasProcessRunnerInterface;
-use NatePage\Standards\Interfaces\ProcessInterface;
-use NatePage\Standards\Interfaces\ProcessRunnerInterface;
-use NatePage\Standards\Processes\CliProcess;
-use NatePage\Standards\Runners\PhpUnitProcessRunner;
-use NatePage\Standards\Runners\ProcessRunner;
+use NatePage\Standards\Processes\PhpUnitProcess;
+use Symfony\Component\Process\Process;
 
-class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
+class PhpUnit extends AbstractTool
 {
     private const AUTOLOAD = 'vendor/autoload.php';
-
-    /**
-     * Get tool identifier.
-     *
-     * @return string
-     */
-    public function getId(): string
-    {
-        return 'phpunit';
-    }
 
     /**
      * Get tool name.
@@ -38,116 +23,116 @@ class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
     }
 
     /**
-     * Get process.
+     * Get tool options.
      *
-     * @return \NatePage\Standards\Interfaces\ProcessInterface
+     * @return mixed[]
+     */
+    public function getOptions(): array
+    {
+        return [
+            'config-file' => [
+                'default' => 'phpunit.xml',
+                'description' => 'Config file to use to run PHPUnit'
+            ],
+            'coverage-minimum-level' => [
+                'default' => 90,
+                'description' => 'The minimum coverage to have, will be ignored if coverage check is disabled'
+            ],
+            'enable-code-coverage' => [
+                'default' => true,
+                'description' => 'Whether or not to enable code coverage checks'
+            ],
+            'junit-log-path' => [
+                'description' => 'The path to output junit parseable log file, will be ignored if left blank'
+            ],
+            'paratest-processes-number' => [
+                'default' => 8,
+                'description' => 'Number of processes to run when using paratest'
+            ],
+            'tests-directory' => [
+                'default' => 'tests',
+                'description' => 'The tests directory, will be ignored it phpunit.xml exists in working directory'
+            ]
+        ];
+    }
+
+    /**
+     * Get process to run.
+     *
+     * @return \Symfony\Component\Process\Process
      *
      * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
-     * @throws \NatePage\Standards\Exceptions\UnableToRunToolException
      * @throws \EoneoPay\Utils\Exceptions\InvalidXmlException
+     * @throws \ReflectionException
      */
-    public function getProcess(): ProcessInterface
+    public function getProcess(): Process
     {
-        $configFile = (string)$this->config->get('phpunit.config_file');
-        $env = [];
-
-        // If config file exists, get env values to pass them to process
-        if (\file_exists($configFile)) {
-            $phpUnitConfig = (new XmlConverter())->xmlToArray(
-                \file_get_contents($this->config->get('phpunit.config_file')),
-                XmlConverter::XML_INCLUDE_ATTRIBUTES
-            );
-
-            foreach ($phpUnitConfig['php']['env'] ?? [] as $node) {
-                $name = $node['@attributes']['name'] ?? null;
-
-                if ($name === null) {
-                    continue;
-                }
-
-                $env[$name] = $node['@attributes']['value'] ?? 'NULL';
-            }
-        }
-
-        return new CliProcess($this->getCli(), null, $env);
-    }
-
-    /**
-     * Get process runner.
-     *
-     * @return \NatePage\Standards\Interfaces\ProcessRunnerInterface
-     */
-    public function getProcessRunner(): ProcessRunnerInterface
-    {
-        if ($this->config->get('phpunit.enable_code_coverage') === false) {
-            return new ProcessRunner();
-        }
-
-        return new PhpUnitProcessRunner((int)$this->config->get('phpunit.coverage_minimum_level'));
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \NatePage\Standards\Exceptions\UnableToRunToolException
-     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
-     */
-    protected function getCli(): string
-    {
-        $config = $this->config->dump();
-
-        // Check minimum requirements
-        $this->checkMinRequirements($config);
-
         // Get base cli
         $cli = $this->preferParatest() ?? $this->preferPhpunit();
 
         // If config file doesn't exist, manually set bootstrap and test directory
-        if (\file_exists($config['phpunit.config_file']) === false) {
-            $cli .= \sprintf(' --bootstrap=%s %s', self::AUTOLOAD, $config['phpunit.test_directory']);
+        if (\file_exists($this->getOptionValue('config-file') ?? '') === false) {
+            $cli .= \sprintf(' --bootstrap=%s %s', self::AUTOLOAD, $this->getOptionValue('tests-directory'));
         }
 
         // If coverage enabled
-        if ($config['phpunit.enable_code_coverage'] === true) {
+        if ($this->getOptionValue('enable-code-coverage') === true) {
             $cli = $this->withCoverage($cli);
 
             // If junit enabled
-            if (empty($config['phpunit.junit_log_path']) === false) {
-                $cli .= \sprintf(' --log-junit=%s', $config['phpunit.junit_log_path']);
+            if (empty($this->getOptionValue('junit-log-path')) === false) {
+                $cli .= \sprintf(' --log-junit=%s', $this->getOptionValue('junit-log-path'));
             }
         }
 
-        return $cli;
+        return new PhpUnitProcess(
+            $cli,
+            $this->getOptionValue('coverage-minimum-level'),
+            $this->getEnvValues()
+        );
     }
 
     /**
-     * Check if minimum requirements are here.
+     * Get env values from config files.
      *
-     * @param mixed[] $config
+     * @return mixed[]
      *
-     * @return bool
-     *
-     * @throws \NatePage\Standards\Exceptions\UnableToRunToolException
+     * @throws \EoneoPay\Utils\Exceptions\InvalidXmlException
      */
-    private function checkMinRequirements(array $config): bool
+    private function getEnvValues(): array
     {
-        if (\file_exists($config['phpunit.config_file']) === false
-            && (\file_exists(self::AUTOLOAD) === false || \is_dir($config['phpunit.test_directory']) === false)) {
-            throw new UnableToRunToolException(\sprintf(
-                'Unable to run phpunit as %s cannot be loaded and %s or %s is missing',
-                $config['phpunit.config_file'],
-                self::AUTOLOAD,
-                $config['phpunit.test_directory']
-            ));
+        $configFile = $this->getOptionValue('config-file') ?? '';
+
+        if (\file_exists($configFile) === false) {
+            return [];
         }
 
-        return true;
+        $env = [];
+
+        $phpUnitConfig = (new XmlConverter())->xmlToArray(
+            \file_get_contents($configFile),
+            XmlConverter::XML_INCLUDE_ATTRIBUTES
+        );
+
+        foreach ($phpUnitConfig['php']['env'] ?? [] as $node) {
+            $name = $node['@attributes']['name'] ?? null;
+
+            if ($name === null) {
+                continue;
+            }
+
+            $env[$name] = $node['@attributes']['value'] ?? 'NULL';
+        }
+
+        return $env;
     }
 
     /**
      * If paratest is available then return cli else null.
      *
      * @return null|string
+     *
+     * @throws \ReflectionException
      */
     private function preferParatest(): ?string
     {
@@ -160,7 +145,7 @@ class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
         return \sprintf(
             '%s -p%d --runner=WrapperRunner --colors',
             $binary,
-            (int)$this->config->get('phpunit.paratest_processes_number')
+            (int)$this->getOptionValue('paratest-processes-number')
         );
     }
 
@@ -170,6 +155,7 @@ class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
      * @return string
      *
      * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
+     * @throws \ReflectionException
      */
     private function preferPhpunit(): string
     {
@@ -182,6 +168,8 @@ class PhpUnit extends WithConfigTool implements HasProcessRunnerInterface
      * @param string $cli
      *
      * @return string
+     *
+     * @throws \ReflectionException
      */
     private function withCoverage(string $cli): string
     {

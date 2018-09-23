@@ -2,14 +2,20 @@
 <?php
 declare(strict_types=1);
 
+use NatePage\Standards\Console\Application;
+use Symplify\PackageBuilder\Console\ThrowableRenderer;
+
 require_once __DIR__ . '/../bootstrap/autoload.php';
 
-use NatePage\Standards\Commands\StandardsCommand;
-use Symfony\Component\Console\Application;
+try {
+    /** @var \Psr\Container\ContainerInterface $container */
+    $container = require __DIR__ . '/../bootstrap/container.php';
+    /** @var \NatePage\Standards\Console\Application $application */
+    $application = $container->get(Application::class);
 
-$app = new Application('standards', '1.0.0');
-$app->add(new StandardsCommand());
-$app->setDefaultCommand('standards', true);
+    exit($application->run());
+} catch (Throwable $throwable) {
+    (new ThrowableRenderer())->render($throwable);
 
-/** @noinspection PhpUnhandledExceptionInspection */
-$app->run();
+    exit($throwable->getCode());
+}

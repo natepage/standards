@@ -5,7 +5,7 @@ namespace NatePage\Standards\Tools;
 
 use Symfony\Component\Process\Process;
 
-class PhpStan extends AbstractTool
+class Ecs extends AbstractTool
 {
     /**
      * Get tool name.
@@ -14,7 +14,7 @@ class PhpStan extends AbstractTool
      */
     public function getName(): string
     {
-        return 'PHPSTAN';
+        return 'ECS';
     }
 
     /**
@@ -25,13 +25,9 @@ class PhpStan extends AbstractTool
     public function getOptions(): array
     {
         return [
-            'neon-file' => [
-                'default' => 'phpstan.neon',
-                'description' => 'Config file for PhpStan, ignored if file doesn\'t exist'
-            ],
-            'reporting-level' => [
-                'default' => 7,
-                'description' => 'The reporting level, 1 = loose, 7 = strict'
+            'config-file' => [
+                'default' => __DIR__ . '/../../config/ecs.yaml',
+                'description' => 'Config file to use to run EasyCodingStandards'
             ]
         ];
     }
@@ -42,20 +38,20 @@ class PhpStan extends AbstractTool
      * @return \Symfony\Component\Process\Process
      *
      * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
+     * @throws \ReflectionException
      */
     public function getProcess(): Process
     {
-        $configFile = $this->getOptionValue('neon-file') ?? '';
-        $neonFile = \file_exists($configFile) ? \sprintf('--configuration=%s', $configFile) : '';
+        $configFile = $this->getOptionValue('config-file') ?? '';
+        $ecsFile = \file_exists($configFile) ? \sprintf('--config=%s', $configFile) : '';
 
         return new Process($this->buildCli([
             $this->resolveBinary(),
-            'analyze',
+            'check',
             $this->explodePaths($this->config->getValue('paths')),
-            $neonFile,
-            '--ansi',
-            \sprintf('--level=%d', $this->getOptionValue('reporting-level')),
-            '--no-progress'
+            $ecsFile,
+            '--clear-cache',
+            '--no-error-table'
         ]));
     }
 }

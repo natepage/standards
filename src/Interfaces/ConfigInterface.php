@@ -6,64 +6,43 @@ namespace NatePage\Standards\Interfaces;
 interface ConfigInterface
 {
     /**
-     * Add option.
-     *
-     * @param \NatePage\Standards\Interfaces\ConfigOptionInterface $option
-     * @param null|string $tool
-     *
-     * @return \NatePage\Standards\Interfaces\ConfigInterface
-     */
-    public function addOption(ConfigOptionInterface $option, ?string $tool = null): self;
-
-    /**
-     * Add multiple options.
-     *
-     * @param \NatePage\Standards\Interfaces\ConfigOptionInterface[] $options
-     * @param null|string $tool
-     *
-     * @return \NatePage\Standards\Interfaces\ConfigInterface
-     */
-    public function addOptions(array $options, ?string $tool = null): self;
-
-    /**
-     * Get flat representation of config.
+     * Get all options.
      *
      * @return mixed[]
      */
-    public function dump(): array;
+    public function getAllOptions(): array;
 
     /**
-     * Get value for given option.
+     * Get all values.
+     *
+     * @return mixed[]
+     */
+    public function getAllValues(): array;
+
+    /**
+     * Get config option for given name.
+     *
+     * @param string $name
+     *
+     * @return null|mixed
+     */
+    public function getOption(string $name): ?array;
+
+    /**
+     * Get config value for given option.
      *
      * @param string $option
      *
      * @return mixed
      */
-    public function get(string $option);
+    public function getValue(string $option);
 
     /**
-     * Get options.
+     * Merge current values with given ones.
      *
-     * @return \NatePage\Standards\Interfaces\ConfigOptionInterface[]
+     * @param mixed[] $values
+     *
+     * @return void
      */
-    public function getOptions(): array;
-
-    /**
-     * Merge current config with given one.
-     *
-     * @param mixed[] $config
-     *
-     * @return \NatePage\Standards\Interfaces\ConfigInterface
-     */
-    public function merge(array $config): self;
-
-    /**
-     * Set value for given option.
-     *
-     * @param string $option
-     * @param mixed $value
-     *
-     * @return \NatePage\Standards\Interfaces\ConfigInterface
-     */
-    public function set(string $option, $value): self;
+    public function mergeValues(array $values): void;
 }

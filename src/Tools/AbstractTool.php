@@ -4,27 +4,65 @@ declare(strict_types=1);
 namespace NatePage\Standards\Tools;
 
 use NatePage\Standards\Exceptions\BinaryNotFoundException;
-use NatePage\Standards\Interfaces\ProcessInterface;
+use NatePage\Standards\Interfaces\ConfigAwareInterface;
 use NatePage\Standards\Interfaces\ToolInterface;
-use NatePage\Standards\Processes\CliProcess;
+use NatePage\Standards\Traits\ConfigAwareTrait;
 use Symfony\Component\Process\Process;
+use Symplify\PackageBuilder\Composer\VendorDirProvider;
 
-abstract class AbstractTool implements ToolInterface
+abstract class AbstractTool implements ToolInterface, ConfigAwareInterface
 {
+    use ConfigAwareTrait;
+
     /**
-     * {@inheritdoc}
+     * Build CLI array for process.
+     *
+     * @param mixed[] $cli
+     *
+     * @return mixed[]
      */
-    public function getProcess(): ProcessInterface
+    protected function buildCli(array $cli): array
     {
-        return new CliProcess($this->getCli());
+        $commandLine = [];
+
+        foreach ($cli as $item) {
+            if (\is_array($item) === false) {
+                $commandLine[] = $item;
+
+                continue;
+            }
+
+            foreach ($item as $subItem) {
+                $commandLine[] = $subItem;
+            }
+        }
+
+        return $commandLine;
     }
 
     /**
-     * Get command line to execute the tool.
+     * Return array containing paths names.
      *
-     * @return string
+     * @param string $paths
+     *
+     * @return string[]
      */
-    abstract protected function getCli(): string;
+    protected function explodePaths(string $paths): array
+    {
+        return \explode(',', $paths);
+    }
+
+    /**
+     * Get option value for current tool.
+     *
+     * @param string $option
+     *
+     * @return mixed
+     */
+    protected function getOptionValue(string $option)
+    {
+        return $this->config->getValue(\strtolower(\sprintf('%s.%s', $this->getName(), $option)));
+    }
 
     /**
      * Resolve given binary or return null.
@@ -34,10 +72,11 @@ abstract class AbstractTool implements ToolInterface
      * @return string
      *
      * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException If binary not found
+     * @throws \ReflectionException
      */
     protected function resolveBinary(?string $binary = null): string
     {
-        $binary = $binary ?? $this->getId();
+        $binary = $binary ?? \strtolower($this->getName());
 
         // Try inspected project vendor
         $vendor = \sprintf('vendor/bin/%s', $binary);
@@ -55,9 +94,11 @@ abstract class AbstractTool implements ToolInterface
             return \trim($command);
         }
 
-        // Fallback to standards binary
-        if (\defined('NPS_VENDOR_DIR') && \file_exists(\sprintf('%sbin/%s', NPS_VENDOR_DIR, $binary))) {
-            return \sprintf('%sbin/%s', NPS_VENDOR_DIR, $binary);
+        // Fallback to local one
+        $vendor = \sprintf('%s/bin/%s', VendorDirProvider::provide(), $binary);
+
+        if (\file_exists($vendor)) {
+            return $vendor;
         }
 
         throw new BinaryNotFoundException(\sprintf('Binary for %s not found.', $binary));

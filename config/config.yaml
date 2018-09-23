@@ -1,0 +1,21 @@
+imports:
+    - { resource: 'services.yaml' }
+
+parameters:
+    standards:
+        display-config:
+            default: false
+            description: Display config values when running standards
+        exit-on-failure:
+            default: false
+            description: Exit on failure
+        only:
+            description: Run only specified tools
+        paths:
+            default: app,src,tests
+            description: Specify the paths to run the tools on
+
+    tools:
+        phpunit:
+            coverage-minimum-level:
+                default: 100
