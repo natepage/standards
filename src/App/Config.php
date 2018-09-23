@@ -45,7 +45,7 @@ class Config implements ConfigInterface, ToolsAwareInterface
         foreach ($options as $name => $option) {
             $key = \strtolower(\sprintf('%s.%s', $tool->getName(), $name));
 
-            $this->options[$key] = $option;
+            $this->options[$key] = \array_merge($option, $this->options[$key] ?? []);
 
             // If value already set in config file, skip
             if (isset($this->values[$key])) {
@@ -118,7 +118,7 @@ class Config implements ConfigInterface, ToolsAwareInterface
 
             $this->values[$name] = $value;
         }
-        
+
         // Might find a better way to handle this kind of things
         $this->handleInvalidPaths();
         $this->handleOnlyTools();
@@ -207,6 +207,7 @@ class Config implements ConfigInterface, ToolsAwareInterface
             foreach ((array)$options as $name => $option) {
                 $key = \strtolower(\sprintf('%s.%s', $tool, $name));
 
+                $this->options[$key] = $option;
                 $this->values[$key] = $option['default'] ?? null;
             }
         }

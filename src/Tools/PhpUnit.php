@@ -63,6 +63,7 @@ class PhpUnit extends AbstractTool
      *
      * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
      * @throws \EoneoPay\Utils\Exceptions\InvalidXmlException
+     * @throws \ReflectionException
      */
     public function getProcess(): Process
     {
@@ -130,6 +131,8 @@ class PhpUnit extends AbstractTool
      * If paratest is available then return cli else null.
      *
      * @return null|string
+     *
+     * @throws \ReflectionException
      */
     private function preferParatest(): ?string
     {
@@ -152,6 +155,7 @@ class PhpUnit extends AbstractTool
      * @return string
      *
      * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
+     * @throws \ReflectionException
      */
     private function preferPhpunit(): string
     {
@@ -164,6 +168,8 @@ class PhpUnit extends AbstractTool
      * @param string $cli
      *
      * @return string
+     *
+     * @throws \ReflectionException
      */
     private function withCoverage(string $cli): string
     {
