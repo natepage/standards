@@ -6,9 +6,6 @@ parameters:
         display-config:
             default: false
             description: Display config values when running standards
-        exit-on-binary-missing:
-            default: false
-            description: Exit on binary missing
         exit-on-failure:
             default: false
             description: Exit on failure
