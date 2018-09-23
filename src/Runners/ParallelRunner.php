@@ -13,6 +13,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class ParallelRunner implements RunnerInterface
 {
     /**
+     * @var bool
+     */
+    private $exitOnFailure;
+
+    /**
      * @var \Symfony\Component\Console\Input\InputInterface
      */
     private $input;
@@ -37,13 +42,15 @@ class ParallelRunner implements RunnerInterface
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @param \NatePage\Standards\Interfaces\ToolInterface[] $tools
+     * @param array $tools
+     * @param bool $exitOnFailure
      */
-    public function __construct(InputInterface $input, OutputInterface $output, array $tools)
+    public function __construct(InputInterface $input, OutputInterface $output, array $tools, bool $exitOnFailure)
     {
         $this->input = $input;
         $this->output = $output;
         $this->tools = $tools;
+        $this->exitOnFailure = $exitOnFailure;
     }
 
     /**
@@ -75,6 +82,11 @@ class ParallelRunner implements RunnerInterface
 
                 if ($process->isSuccessful() === false) {
                     $exitCode = self::EXIT_CODE_ERROR;
+
+                    // If true, exit at first failure
+                    if ($this->exitOnFailure) {
+                        return $exitCode;
+                    }
                 }
 
                 // Remove runner from the list of runners currently running

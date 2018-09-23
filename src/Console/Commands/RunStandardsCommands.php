@@ -77,7 +77,8 @@ class RunStandardsCommands extends Command implements ConfigAwareInterface, Tool
         return (new ParallelRunner(
             $input,
             $output,
-            (new ToolsHelper())->getEnabledTools($this->config, $this->tools))
-        )->run();
+            (new ToolsHelper())->getEnabledTools($this->config, $this->tools),
+            (bool)$this->config->getValue('exit-on-failure')
+        ))->run();
     }
 }
