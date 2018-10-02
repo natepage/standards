@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8aeb3f73d759d9422f6b812d17403735",
+    "content-hash": "7904f376b9e34b069135dc0d73af0400",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -642,6 +642,43 @@
                 "object graph"
             ],
             "time": "2018-06-11T23:09:50+00:00"
+        },
+        {
+            "name": "natepage/sniffs",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/natepage/sniffs.git",
+                "reference": "c7908aa7fadbb245b9e0f639b88263dcdf1d1df5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/natepage/sniffs/zipball/c7908aa7fadbb245b9e0f639b88263dcdf1d1df5",
+                "reference": "c7908aa7fadbb245b9e0f639b88263dcdf1d1df5",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.1",
+                "phpunit/phpunit": "^7.3",
+                "roave/security-advisories": "dev-master",
+                "slevomat/coding-standard": "^4.8",
+                "squizlabs/php_codesniffer": "^3.3"
+            },
+            "type": "package",
+            "autoload": {
+                "psr-4": {
+                    "NatePage\\Sniffs\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Package containing PHPCodeSniffer Sniffs.",
+            "time": "2018-10-02T05:53:33+00:00"
         },
         {
             "name": "nette/bootstrap",

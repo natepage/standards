@@ -31,12 +31,13 @@ services:
     SlevomatCodingStandard\Sniffs\TypeHints\TypeHintDeclarationSniff:
         enableEachParameterAndReturnInspection: 0
 
-    NatePage\Standards\Sniffs\Arrays\ForbiddenArrayLongSyntaxSniff:
-    NatePage\Standards\Sniffs\Arrays\ForbiddenArrayTrailingCommaSniff:
-    NatePage\Standards\Sniffs\Classes\RequireStrictDeclarationSniff:
-    NatePage\Standards\Sniffs\Classes\StrictDeclarationFormatSniff:
-    NatePage\Standards\Sniffs\Commenting\DocCommentSpacingSniff:
-    NatePage\Standards\Sniffs\Commenting\FunctionCommentSniff:
-    NatePage\Standards\Sniffs\ControlStructures\NoElseSniff:
-    NatePage\Standards\Sniffs\ControlStructures\NoNotOperatorSniff:
-    NatePage\Standards\Sniffs\ControlStructures\YodaConditionSniff:
+    NatePage\Sniffs\Arrays\ForbiddenArrayLongSyntaxSniff:
+    NatePage\Sniffs\Arrays\ForbiddenArrayTrailingCommaSniff:
+    NatePage\Sniffs\Classes\RequireStrictDeclarationSniff:
+    NatePage\Sniffs\Classes\StrictDeclarationFormatSniff:
+    NatePage\Sniffs\Commenting\AnnotationSortingSniff:
+    NatePage\Sniffs\Commenting\DocCommentSpacingSniff:
+    NatePage\Sniffs\Commenting\FunctionCommentSniff:
+    NatePage\Sniffs\ControlStructures\NoElseSniff:
+    NatePage\Sniffs\ControlStructures\NoNotOperatorSniff:
+    NatePage\Sniffs\ControlStructures\YodaConditionSniff:
