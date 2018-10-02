@@ -36,6 +36,10 @@ services:
     NatePage\Sniffs\Classes\RequireStrictDeclarationSniff:
     NatePage\Sniffs\Classes\StrictDeclarationFormatSniff:
     NatePage\Sniffs\Commenting\AnnotationSortingSniff:
+        alwaysTopAnnotations:
+            - '@param'
+            - '@return'
+            - '@throws'
     NatePage\Sniffs\Commenting\DocCommentSpacingSniff:
     NatePage\Sniffs\Commenting\FunctionCommentSniff:
     NatePage\Sniffs\ControlStructures\NoElseSniff:
