@@ -50,8 +50,7 @@ class Ecs extends AbstractTool
             'check',
             $this->explodePaths($this->config->getValue('paths')),
             $ecsFile,
-            '--clear-cache',
-            '--no-error-table'
+            '--clear-cache'
         ]));
     }
 }
