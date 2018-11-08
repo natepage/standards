@@ -66,6 +66,7 @@ their documentation.
 - [PHPMD][6]: Takes a given PHP source code base and look for several potential problems within that source
 - [PHPStan][7]: PHP Static Analysis Tool - discover bugs in your code without running it
 - [PHPUnit][8]: Run unit tests in PHP applications
+- [SecurityChecker][9]: PHP security vulnerabilities monitoring
 
 # Usage
 
@@ -129,6 +130,7 @@ phpunit.enabled | Enable/Disable PHPUnit | true
 phpunit.junit-log-path | The path to output junit parseable log file, can be relative, will be ignored if left blank | NULL
 phpunit.paratest-processes-number | Number of processes to run when using paratest | 8
 phpunit.test-directory | The directory containing tests, will be ignored it phpunit.xml exists in working directory | tests
+security-checker.enabled | Enable/Disable security SecurityChecker | true
 
 [1]: https://github.com/natepage/standards
 [2]: https://getcomposer.org/
@@ -138,4 +140,4 @@ phpunit.test-directory | The directory containing tests, will be ignored it phpu
 [6]: https://phpmd.org/
 [7]: https://github.com/phpstan/phpstan
 [8]: https://phpunit.de/
-[9]: https://symfony.com/doc/current/components/console.html
+[9]: https://security.symfony.com/
