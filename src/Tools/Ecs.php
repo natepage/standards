@@ -38,7 +38,6 @@ class Ecs extends AbstractTool
      * @return \Symfony\Component\Process\Process
      *
      * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
-     * @throws \ReflectionException
      */
     public function getProcess(): Process
     {

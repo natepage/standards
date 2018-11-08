@@ -72,7 +72,6 @@ abstract class AbstractTool implements ToolInterface, ConfigAwareInterface
      * @return string
      *
      * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException If binary not found
-     * @throws \ReflectionException
      */
     protected function resolveBinary(?string $binary = null): string
     {
