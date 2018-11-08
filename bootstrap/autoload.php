@@ -2,12 +2,10 @@
 declare(strict_types=1);
 
 $possibleAutoloadPaths = [
-    // after split package
+    // project dependency
     __DIR__ . '/../vendor',
-    // dependency
-    __DIR__ . '/../../repositories',
-    // monorepo
-    __DIR__ . '/../../../vendor'
+    // global dependency
+    __DIR__ . '/../../..'
 ];
 
 foreach ($possibleAutoloadPaths as $possibleAutoloadPath) {
