@@ -3,7 +3,7 @@ imports:
 
 services:
     PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff:
-        lineLimit: 120
+        absoluteLineLimit: 120
     PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\DisallowShortOpenTagSniff:
     PHP_CodeSniffer\Standards\PSR1\Sniffs\Methods\CamelCapsMethodNameSniff:
 
