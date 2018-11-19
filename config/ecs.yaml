@@ -2,6 +2,11 @@ imports:
     - { resource: '%vendor_dir%/symplify/easy-coding-standard/config/psr2.yml' }
 
 services:
+    PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff:
+        lineLimit: 120
+    PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\DisallowShortOpenTagSniff:
+    PHP_CodeSniffer\Standards\PSR1\Sniffs\Methods\CamelCapsMethodNameSniff:
+
     SlevomatCodingStandard\Sniffs\Classes\ClassConstantVisibilitySniff:
     SlevomatCodingStandard\Sniffs\Commenting\EmptyCommentSniff:
     SlevomatCodingStandard\Sniffs\Commenting\InlineDocCommentDeclarationSniff:
