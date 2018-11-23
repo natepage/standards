@@ -1,7 +1,7 @@
 # Standards
 
 This package is an easy-to-use all in one coding standards package. It allows you in just a few seconds to check your
-code against the most popular tools in term of code quality and have a clear answer about: Are you a champion? Or do you
+code against the most popular tools in terms of code quality and have a clear answer about: Are you a champion? Or do you
 still need improve? (Don't worry if you're reading this, you're already a champion!)
 
 # Installation
