@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace NatePage\Standards\DependencyInjection\CompilerPasses;
 
 use NatePage\Standards\Console\Application;
+use NatePage\Standards\Helpers\BinaryHelper;
+use NatePage\Standards\Interfaces\BinaryAwareInterface;
 use NatePage\Standards\Interfaces\ConfigAwareInterface;
 use NatePage\Standards\Interfaces\ConfigInterface;
 use NatePage\Standards\Interfaces\ToolInterface;
@@ -21,6 +23,7 @@ class CollectorsCompilerPass implements CompilerPassInterface
      */
     private static $calls = [
         [Application::class, Command::class, 'add'],
+        [BinaryAwareInterface::class, BinaryHelper::class, 'setBinaryHelper'],
         [ConfigAwareInterface::class, ConfigInterface::class, 'setConfig'],
         [ToolsAwareInterface::class, ToolInterface::class, 'addTool']
     ];

@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace NatePage\Standards\Tools;
 
-use NatePage\Standards\Exceptions\BinaryNotFoundException;
+use NatePage\Standards\Interfaces\BinaryAwareInterface;
 use NatePage\Standards\Interfaces\ConfigAwareInterface;
 use NatePage\Standards\Interfaces\ToolInterface;
+use NatePage\Standards\Traits\BinaryAwareTrait;
 use NatePage\Standards\Traits\ConfigAwareTrait;
-use Symfony\Component\Process\Process;
-use Symplify\PackageBuilder\Composer\VendorDirProvider;
 
-abstract class AbstractTool implements ToolInterface, ConfigAwareInterface
+abstract class AbstractTool implements BinaryAwareInterface, ConfigAwareInterface, ToolInterface
 {
+    use BinaryAwareTrait;
     use ConfigAwareTrait;
 
     /**
@@ -65,42 +65,17 @@ abstract class AbstractTool implements ToolInterface, ConfigAwareInterface
     }
 
     /**
-     * Resolve given binary or return null.
+     * Resolve binary.
      *
      * @param null|string $binary
      *
      * @return string
      *
-     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException If binary not found
+     * @throws \NatePage\Standards\Exceptions\BinaryNotFoundException
      */
     protected function resolveBinary(?string $binary = null): string
     {
-        $binary = $binary ?? \strtolower($this->getName());
-
-        // Try inspected project vendor
-        $vendor = \sprintf('vendor/bin/%s', $binary);
-
-        if (\file_exists($vendor)) {
-            return $vendor;
-        }
-
-        // Try command line tool
-        $process = new Process(\sprintf('command -v %s', $binary));
-        $process->run();
-        $command = $process->getOutput();
-
-        if (empty($command) === false && $process->isSuccessful()) {
-            return \trim($command);
-        }
-
-        // Fallback to local one
-        $vendor = \sprintf('%s/bin/%s', VendorDirProvider::provide(), $binary);
-
-        if (\file_exists($vendor)) {
-            return $vendor;
-        }
-
-        throw new BinaryNotFoundException(\sprintf('Binary for %s not found.', $binary));
+        return $this->binaryHelper->resolveBinary($binary ?? $this->getName());
     }
 
     /**
