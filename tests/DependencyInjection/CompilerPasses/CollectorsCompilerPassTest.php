@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class CollectorsCompilerPassTest extends TestCase
 {
     /**
-     * Description here
+     * Add commands to application.
      *
      * @return void
      */
