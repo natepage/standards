@@ -14,7 +14,7 @@ use Psr\Container\ContainerInterface;
 class ContainerFactoryTest extends TestCase
 {
     /**
-     * Description here
+     * Should return ContainerInterface.
      *
      * @return void
      *
