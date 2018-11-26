@@ -5,24 +5,13 @@ namespace NatePage\Standards\Interfaces;
 
 interface RunnerInterface
 {
-    /**
-     * Check if currently running.
-     *
-     * @return bool
-     */
-    public function isRunning(): bool;
+    public const EXIT_CODE_ERROR = 1;
+    public const EXIT_CODE_SUCCESS = 0;
 
     /**
-     * Check if successful.
+     * Run.
      *
-     * @return bool
+     * @return int
      */
-    public function isSuccessful(): bool;
-
-    /**
-     * Run given instance.
-     *
-     * @return self
-     */
-    public function run(): self;
+    public function run(): int;
 }
