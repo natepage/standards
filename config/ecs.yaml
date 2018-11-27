@@ -50,3 +50,4 @@ services:
     NatePage\Sniffs\ControlStructures\NoElseSniff:
     NatePage\Sniffs\ControlStructures\NoNotOperatorSniff:
     NatePage\Sniffs\ControlStructures\YodaConditionSniff:
+    NatePage\Sniffs\Namespaces\PSR4Sniff:
